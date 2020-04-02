@@ -10,75 +10,23 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      newStyle: {
-        "background-color": 'black'
-      },
       divs: [],
       selected: []
     };
   }
 
-  handleSubmit = (e) => {
-    e.preventDefault();
-    if (this.state.selected.length === 0) {
-      this.addDiv();
-    } else {
-      this.changeDivs();
-    }
-  }
-
-  handleTopPos = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle.top = e.target.value + '%';
-    this.setState({
-      newStyle
-    });
-  }
-
-  handleLeftPos = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle.left = e.target.value + '%';
-    this.setState({
-      newStyle
-    });
-  }
-
-  handleWidth = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle.width = e.target.value + '%';
-    this.setState({
-      newStyle
-    });
-  }
-
-  handleHeight = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle.height = e.target.value + '%';
-    this.setState({
-      newStyle
-    });
-  }
-
-  handleBgColour = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle["background-color"] = e.target.value;
-    this.setState({
-      newStyle
-    });
-  }
-
-  addDiv = () => {
+  addDiv = (style) => {
     const divs = [...this.state.divs];
-    divs.push(this.state.newStyle);
+    divs.push(style);
     this.setState({
       divs
     });
   }
 
-  changeDivs = () => {
+  changeDivs = (style) => {
     const divs = [...this.state.divs];
     this.state.selected.forEach((selection) => {
-      divs[selection.index] = this.state.newStyle;
+      divs[selection.index] = style;
     });
     this.setState({
       divs
@@ -109,24 +57,7 @@ class App extends Component {
   render() {
     return (
       <div className="mainContainer">
-        <Toolbar />
-        <form onSubmit={this.handleSubmit}>
-          <label htmlFor="top">Top:</label>
-          <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" />
-          <label htmlFor="left">Left:</label>
-          <input onChange={this.handleLeftPos} type="number" min="0" max="100" id="left" />
-          <label htmlFor="width">Width:</label>
-          <input onChange={this.handleWidth} type="number" min="0" max="100" id="width" />
-          <label htmlFor="height">Height:</label>
-          <input onChange={this.handleHeight} type="number" min="0" max="100" id="height" />
-          <label htmlFor="bgColour">Background-Color:</label>
-          <input onChange={this.handleBgColour} type="color" id="bgColour" />
-          <button type="submit">
-            {
-              this.state.selected.length === 0 ? 'Add' : 'Change'
-            }
-          </button>
-        </form>
+        <Toolbar addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} />
         {
           this.state.divs.map((item, index) => {
             return(
