@@ -11,7 +11,12 @@ class App extends Component {
     super();
     this.state = {
       divs: [],
-      selected: []
+      selected: [],
+      moving: false,
+      mouseCoords: {
+        x: 0,
+        y: 0
+      }
     };
   }
 
@@ -54,10 +59,43 @@ class App extends Component {
     });
   }
 
+  toggleMove = () => {
+    this.setState({
+      moving: !this.state.moving
+    });
+  }
+
+  handleMouseMove = (e) => {
+    const mouseCoords = {
+      x: e.clientX,
+      y: e.clientY
+    };
+    if (this.state.moving && this.state.selected.length > 0) {
+      const divs = [...this.state.divs];
+      this.state.selected.forEach((selection) => {
+        const style = {...divs[selection.index]};
+        style.top = mouseCoords.y + 'px';
+        style.left = mouseCoords.x + 'px';
+        divs[selection.index] = style;
+      });
+      this.setState({
+        divs
+      });
+    }
+    // this.setState({
+    //   mouseCoords
+    // });
+  }
+
   render() {
     return (
-      <div className="mainContainer">
-        <Toolbar addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} />
+      <div className="mainContainer" onMouseMove={ (e) => {
+            if (this.state.moving) {
+              this.handleMouseMove(e);
+            }
+          }
+        } >
+        <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} />
         {
           this.state.divs.map((item, index) => {
             return(

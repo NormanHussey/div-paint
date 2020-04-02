@@ -79,6 +79,7 @@ class Toolbar extends Component {
               }
           </button>
         </form>
+        <button onClick={this.props.toggleMove}>Move</button>
       </div>
     );
   }
