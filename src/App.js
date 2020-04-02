@@ -1,19 +1,30 @@
 import React, { Component } from 'react';
 import './App.css';
+
 import Div from './Components/Div';
+import Toolbar from './Components/Toolbar';
+
+import removeFromArray from './functions/removeFromArray';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      newStyle: {},
-      divs: []
+      newStyle: {
+        "background-color": 'black'
+      },
+      divs: [],
+      selected: []
     };
   }
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.addDiv();
+    if (this.state.selected.length === 0) {
+      this.addDiv();
+    } else {
+      this.changeDivs();
+    }
   }
 
   handleTopPos = (e) => {
@@ -57,16 +68,48 @@ class App extends Component {
   }
 
   addDiv = () => {
-    const currentDivs = [...this.state.divs];
-    currentDivs.push(this.state.newStyle);
+    const divs = [...this.state.divs];
+    divs.push(this.state.newStyle);
     this.setState({
-      divs: currentDivs
+      divs
+    });
+  }
+
+  changeDivs = () => {
+    const divs = [...this.state.divs];
+    this.state.selected.forEach((selection) => {
+      divs[selection.index] = this.state.newStyle;
+    });
+    this.setState({
+      divs
+    });
+  }
+
+  select = (index) => {
+    const selected = [...this.state.selected];
+    const selection = {
+      index: index,
+      style: this.state.divs[index]
+    };
+    selected.push(selection);
+
+    this.setState({
+      selected
+    });
+  }
+
+  unselect = (index) => {
+    const selected = [...this.state.selected];
+    removeFromArray(selected[index], selected);
+    this.setState({
+      selected
     });
   }
 
   render() {
     return (
       <div className="mainContainer">
+        <Toolbar />
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="top">Top:</label>
           <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" />
@@ -76,14 +119,18 @@ class App extends Component {
           <input onChange={this.handleWidth} type="number" min="0" max="100" id="width" />
           <label htmlFor="height">Height:</label>
           <input onChange={this.handleHeight} type="number" min="0" max="100" id="height" />
-          <label htmlFor="bgColour">Background-Colour:</label>
+          <label htmlFor="bgColour">Background-Color:</label>
           <input onChange={this.handleBgColour} type="color" id="bgColour" />
-          <button type="submit">Add Div</button>
+          <button type="submit">
+            {
+              this.state.selected.length === 0 ? 'Add' : 'Change'
+            }
+          </button>
         </form>
         {
           this.state.divs.map((item, index) => {
             return(
-              <Div style={item} key={index} index={index}/>
+              <Div select={this.select} unselect={this.unselect} style={item} key={index} index={index}/>
             );
           })
         }

@@ -12,14 +12,24 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
   position: relative;
   width: 100%;
   height: 100vh;
-  background-color: white;
+  /* background-color: white; */
 }
 
-.addedDiv {
+.newDiv {
   position: absolute;
   /* top: 100px;
   left: 100px; */
   /* width: 100px;
   height: 100px;
   background-color: 'red'; */
+}
+
+.selected {
+  outline: 2px dotted red;
+}
+
+form {
+  width: 10%;
+  display: flex;
+  flex-direction: column;
 }

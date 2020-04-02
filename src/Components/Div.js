@@ -4,28 +4,28 @@ class Div extends Component {
   constructor() {
     super();
     this.state = {
-        style: {},
-        index: 0
+        selected: false
     }
   }
 
-  componentDidMount() {
-    const style = this.props.style;
-    // const style = {
-    //     top: this.props.top + '%',
-    //     left: this.props.left + '%'
-    // };
+  toggleSelect = () => {
+    if (!this.state.selected) {
+        this.props.select(this.props.index);
+    } else {
+        this.props.unselect(this.props.index);
+    }
     this.setState({
-        style,
-        index: this.props.index
-    }, 
-        () => { console.log(this.state.style)}
-    );
+        selected: !this.state.selected,
+    });
   }
   
   render() {
+    let selectedClass = 'newDiv';
+    if (this.state.selected) {
+      selectedClass += ' selected';
+    }
     return (
-      <div className="addedDiv" style={this.state.style}>
+      <div onClick={this.toggleSelect} className={selectedClass} style={this.props.style}>
 
       </div>
     );
