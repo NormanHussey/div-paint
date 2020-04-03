@@ -17,11 +17,13 @@ class Toolbar extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    if (!this.props.selected) {
-      this.props.addDiv(this.state.newStyle);
-    } else {
-      this.props.changeDivs(this.state.newStyle);
-    }
+    e.stopPropagation();
+    // if (!this.props.selected) {
+    //   this.props.addDiv(this.state.newStyle);
+    // } else {
+    //   this.props.changeDivs(this.state.newStyle);
+    // }
+    this.props.addDiv(this.state.newStyle);
   }
 
   handleTopPos = (e) => {

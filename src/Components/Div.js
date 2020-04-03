@@ -55,7 +55,17 @@ class Div extends Component {
       selectedClass += ' selected';
     }
     return (
-      <div ref={this.ref} onClick={this.toggleSelect} className={selectedClass} style={this.props.style}></div>
+      <div ref={this.ref} onClick={this.toggleSelect} className={selectedClass} style={this.props.style}>
+        {
+          this.props.childDivs ?
+          this.props.childDivs.map((item, index) => {
+            return (
+              <Div selected={item.selected} select={this.props.select} unselect={this.props.unselect} style={item.style} key={index} index={index} />
+            );
+          })
+          : null
+        }
+      </div>
     );
   }
 }

@@ -23,9 +23,15 @@ class App extends Component {
     const divs = [...this.state.divs];
     const divInfo = {
       style: style,
-      selected: false
+      selected: false,
+      childDivs: []
     };
-    divs.push(divInfo);
+    if (this.state.selected.length > 0) {
+      divInfo.style["z-index"] = 10;
+      divs[this.state.selected[0].index].childDivs.push(divInfo);
+    } else {
+      divs.push(divInfo);
+    }
     this.setState({
       divs
     });
@@ -78,7 +84,6 @@ class App extends Component {
   unselectAll = () => {
     const divs = [...this.state.divs];
     this.state.selected.forEach((item) => {
-      console.log(item);
       divs[item.index].selected = false;
     });
     this.setState({
@@ -123,12 +128,12 @@ class App extends Component {
               this.handleMouseMove(e);
             }
           }
-        } onClick={this.unselectAll} >
+        } >
         <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} />
         {
           this.state.divs.map((item, index) => {
             return(
-              <Div selected={item.selected} setClickPosition={this.getClickPosition} select={this.select} unselect={this.unselect} style={item.style} key={index} index={index} />
+              <Div selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={index} index={index} childDivs={item.childDivs} />
             );
           })
         }
