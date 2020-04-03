@@ -4,16 +4,15 @@ class Div extends Component {
   constructor() {
     super();
     this.ref = React.createRef();
-    this.state = {
-        selected: false,
-        position: {}
-    }
+    // this.state = {
+    //     position: {}
+    // }
   }
 
   componentDidMount() {
-    this.setState({
-      position: this.getPosition()
-    });
+    // this.setState({
+    //   position: this.getPosition()
+    // });
   }
 
   getPosition = () => {
@@ -26,21 +25,20 @@ class Div extends Component {
   toggleSelect = (e) => {
     const position = this.getPosition();
     const mouseCoords = this.getMouseCoords(e);
-    console.log(mouseCoords.x, mouseCoords.y);
+    // console.log(mouseCoords.x, mouseCoords.y);
     const relativeCoords = {
       x: mouseCoords.x - position.left,
       y: mouseCoords.y - position.top
     };
-    console.log(relativeCoords);
-    if (!this.state.selected) {
+    // console.log(relativeCoords);
+    if (!this.props.selected) {
         this.props.select(this.props.index, relativeCoords);
     } else {
         this.props.unselect(this.props.index);
     }
-    this.setState({
-        selected: !this.state.selected,
-        position
-    });
+    // this.setState({
+    //     position
+    // });
   }
 
   getMouseCoords = (e) => {
@@ -52,7 +50,7 @@ class Div extends Component {
   
   render() {
     let selectedClass = 'newDiv';
-    if (this.state.selected) {
+    if (this.props.selected) {
       selectedClass += ' selected';
     }
     return (

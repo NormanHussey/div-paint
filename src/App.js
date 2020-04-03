@@ -24,7 +24,8 @@ class App extends Component {
   addDiv = (style) => {
     const divs = [...this.state.divs];
     const divInfo = {
-      style: style
+      style: style,
+      selected: false
     };
     divs.push(divInfo);
     this.setState({
@@ -44,23 +45,35 @@ class App extends Component {
 
   select = (index, mouseCoords) => {
     const selected = [...this.state.selected];
+    const divs = [...this.state.divs];
     const selection = {
       index: index,
-      style: this.state.divs[index],
+      style: divs[index].style,
       mouseCoords: mouseCoords
     };
     selected.push(selection);
+    divs[index].selected = true;
 
     this.setState({
-      selected
+      selected,
+      divs
     });
   }
 
   unselect = (index) => {
     const selected = [...this.state.selected];
-    removeFromArray(selected[index], selected);
+    const divs = [...this.state.divs];
+    const newSelected = selected.filter((item) => {
+      if (item.index === index) {
+        divs[index].selected = false;
+        return false;
+      } else {
+        return true;
+      }
+    });
     this.setState({
-      selected
+      selected: newSelected,
+      divs
     });
   }
 
@@ -86,8 +99,6 @@ class App extends Component {
         style.top = ((moveCoords.y - selection.mouseCoords.y) / board.height) * 100 + '%';
         style.left = ((moveCoords.x - selection.mouseCoords.x) / board.width) * 100 + '%';
         divs[selection.index].style = style;
-        console.log("move: ", moveCoords.x, moveCoords.y);
-        console.log("mouse: ", selection.mouseCoords.x, selection.mouseCoords.y);
       });
       this.setState({
         divs
@@ -97,7 +108,7 @@ class App extends Component {
 
   render() {
     return (
-      <div ref={this.boardRef} className="mainContainer" onKeyPress={this.shortcutKey} onMouseMove={ (e) => {
+      <div ref={this.boardRef} className="mainContainer" onMouseMove={ (e) => {
             if (this.state.moving) {
               this.handleMouseMove(e);
             }
@@ -107,7 +118,7 @@ class App extends Component {
         {
           this.state.divs.map((item, index) => {
             return(
-              <Div setClickPosition={this.getClickPosition} select={this.select} unselect={this.unselect} style={item.style} key={index} index={index}/>
+              <Div selected={item.selected} setClickPosition={this.getClickPosition} select={this.select} unselect={this.unselect} style={item.style} key={index} index={index} />
             );
           })
         }
