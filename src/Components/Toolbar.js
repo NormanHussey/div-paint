@@ -64,7 +64,10 @@ class Toolbar extends Component {
     });
   }
 
-  toggleMove = () => {
+  toggleMove = (e) => {
+    if (e) {
+      e.stopPropagation();
+    }
     this.props.toggleMove();
     this.setState({
       moveActive: !this.state.moveActive

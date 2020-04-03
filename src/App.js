@@ -4,8 +4,6 @@ import './App.css';
 import Div from './Components/Div';
 import Toolbar from './Components/Toolbar';
 
-import removeFromArray from './functions/removeFromArray';
-
 class App extends Component {
   constructor() {
     super();
@@ -43,13 +41,13 @@ class App extends Component {
     });
   }
 
-  select = (index, mouseCoords) => {
+  select = (index, moveCoords) => {
     const selected = [...this.state.selected];
     const divs = [...this.state.divs];
     const selection = {
       index: index,
       style: divs[index].style,
-      mouseCoords: mouseCoords
+      moveCoords: moveCoords
     };
     selected.push(selection);
     divs[index].selected = true;
@@ -77,6 +75,18 @@ class App extends Component {
     });
   }
 
+  unselectAll = () => {
+    const divs = [...this.state.divs];
+    this.state.selected.forEach((item) => {
+      console.log(item);
+      divs[item.index].selected = false;
+    });
+    this.setState({
+      divs,
+      selected: []
+    });
+  }
+
   toggleMove = () => {
     this.setState({
       moving: !this.state.moving
@@ -84,7 +94,7 @@ class App extends Component {
   }
 
   handleMouseMove = (e) => {
-    const moveCoords = {
+    const mouseCoords = {
       x: e.clientX,
       y: e.clientY
     };
@@ -96,8 +106,8 @@ class App extends Component {
       const divs = [...this.state.divs];
       this.state.selected.forEach((selection) => {
         const style = {...divs[selection.index].style};
-        style.top = ((moveCoords.y - selection.mouseCoords.y) / board.height) * 100 + '%';
-        style.left = ((moveCoords.x - selection.mouseCoords.x) / board.width) * 100 + '%';
+        style.top = ((mouseCoords.y - selection.moveCoords.y) / board.height) * 100 + '%';
+        style.left = ((mouseCoords.x - selection.moveCoords.x) / board.width) * 100 + '%';
         divs[selection.index].style = style;
       });
       this.setState({
@@ -113,7 +123,7 @@ class App extends Component {
               this.handleMouseMove(e);
             }
           }
-        } >
+        } onClick={this.unselectAll} >
         <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} />
         {
           this.state.divs.map((item, index) => {

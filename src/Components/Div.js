@@ -23,6 +23,7 @@ class Div extends Component {
   }
 
   toggleSelect = (e) => {
+    e.stopPropagation();
     const position = this.getPosition();
     const mouseCoords = this.getMouseCoords(e);
     // console.log(mouseCoords.x, mouseCoords.y);
