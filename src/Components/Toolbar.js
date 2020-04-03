@@ -5,9 +5,14 @@ class Toolbar extends Component {
     super();
     this.state = {
       newStyle: {
-        "background-color": 'black'
-      }
+        backgroundColor: 'black'
+      },
+      moveActive: false
     }
+  }
+
+  componentDidMount() {
+    window.addEventListener('keypress', this.shortcutKey);
   }
 
   handleSubmit = (e) => {
@@ -53,15 +58,37 @@ class Toolbar extends Component {
 
   handleBgColour = (e) => {
     const newStyle = {...this.state.newStyle};
-    newStyle["background-color"] = e.target.value;
+    newStyle.backgroundColor = e.target.value;
     this.setState({
       newStyle
     });
   }
 
+  toggleMove = () => {
+    this.props.toggleMove();
+    this.setState({
+      moveActive: !this.state.moveActive
+    });
+  }
+
+  shortcutKey = (e) => {
+    // console.log(e.which);
+    switch(e.which) {
+      case 109:
+        this.toggleMove();
+        break;
+      default:
+        // do nothing
+    }
+  }
+
   render() {
+    let moveClass = '';
+    if (this.state.moveActive) {
+      moveClass = 'activeButton';
+    }
     return(
-      <div>
+      <div className="toolbar">
         <form onSubmit={this.handleSubmit}>
           <label htmlFor="top">Top:</label>
           <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" />
@@ -79,7 +106,7 @@ class Toolbar extends Component {
               }
           </button>
         </form>
-        <button onClick={this.props.toggleMove}>Move</button>
+        <button className={moveClass} onClick={this.toggleMove}>Move</button>
       </div>
     );
   }

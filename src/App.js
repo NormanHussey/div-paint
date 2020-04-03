@@ -9,6 +9,7 @@ import removeFromArray from './functions/removeFromArray';
 class App extends Component {
   constructor() {
     super();
+    this.boardRef = React.createRef();
     this.state = {
       divs: [],
       selected: [],
@@ -22,7 +23,10 @@ class App extends Component {
 
   addDiv = (style) => {
     const divs = [...this.state.divs];
-    divs.push(style);
+    const divInfo = {
+      style: style
+    };
+    divs.push(divInfo);
     this.setState({
       divs
     });
@@ -31,18 +35,19 @@ class App extends Component {
   changeDivs = (style) => {
     const divs = [...this.state.divs];
     this.state.selected.forEach((selection) => {
-      divs[selection.index] = style;
+      divs[selection.index].style = style;
     });
     this.setState({
       divs
     });
   }
 
-  select = (index) => {
+  select = (index, mouseCoords) => {
     const selected = [...this.state.selected];
     const selection = {
       index: index,
-      style: this.state.divs[index]
+      style: this.state.divs[index],
+      mouseCoords: mouseCoords
     };
     selected.push(selection);
 
@@ -66,30 +71,33 @@ class App extends Component {
   }
 
   handleMouseMove = (e) => {
-    const mouseCoords = {
+    const moveCoords = {
       x: e.clientX,
       y: e.clientY
+    };
+    const board = {
+      width: this.boardRef.current.offsetWidth,
+      height: this.boardRef.current.offsetHeight
     };
     if (this.state.moving && this.state.selected.length > 0) {
       const divs = [...this.state.divs];
       this.state.selected.forEach((selection) => {
-        const style = {...divs[selection.index]};
-        style.top = mouseCoords.y + 'px';
-        style.left = mouseCoords.x + 'px';
-        divs[selection.index] = style;
+        const style = {...divs[selection.index].style};
+        style.top = ((moveCoords.y - selection.mouseCoords.y) / board.height) * 100 + '%';
+        style.left = ((moveCoords.x - selection.mouseCoords.x) / board.width) * 100 + '%';
+        divs[selection.index].style = style;
+        console.log("move: ", moveCoords.x, moveCoords.y);
+        console.log("mouse: ", selection.mouseCoords.x, selection.mouseCoords.y);
       });
       this.setState({
         divs
       });
     }
-    // this.setState({
-    //   mouseCoords
-    // });
   }
 
   render() {
     return (
-      <div className="mainContainer" onMouseMove={ (e) => {
+      <div ref={this.boardRef} className="mainContainer" onKeyPress={this.shortcutKey} onMouseMove={ (e) => {
             if (this.state.moving) {
               this.handleMouseMove(e);
             }
@@ -99,7 +107,7 @@ class App extends Component {
         {
           this.state.divs.map((item, index) => {
             return(
-              <Div select={this.select} unselect={this.unselect} style={item} key={index} index={index}/>
+              <Div setClickPosition={this.getClickPosition} select={this.select} unselect={this.unselect} style={item.style} key={index} index={index}/>
             );
           })
         }
