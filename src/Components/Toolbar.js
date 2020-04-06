@@ -107,7 +107,7 @@ class Toolbar extends Component {
           <input onChange={this.handleBgColour} type="color" id="bgColour" />
           <button type="submit">
               {
-                this.props.selected ? 'Change' : 'Add'
+                this.props.selected ? 'Add Child' : 'Add'
               }
           </button>
         </form>
