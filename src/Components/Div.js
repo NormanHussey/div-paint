@@ -33,7 +33,7 @@ class Div extends Component {
     };
     // console.log(relativeCoords);
     if (!this.props.selected) {
-        this.props.select(this.props.index, relativeCoords);
+        this.props.select(this.props.index, this.props.style, this.props.parents, relativeCoords);
     } else {
         this.props.unselect(this.props.index);
     }
@@ -60,7 +60,7 @@ class Div extends Component {
           this.props.childDivs ?
           this.props.childDivs.map((item, index) => {
             return (
-              <Div selected={item.selected} select={this.props.select} unselect={this.props.unselect} style={item.style} key={index} index={index} />
+              <Div selected={item.selected} select={this.props.select} unselect={this.props.unselect} style={item.style} key={item.id} index={index} childDivs={item.childDivs} parents={item.parents} />
             );
           })
           : null

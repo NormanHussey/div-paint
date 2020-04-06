@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 
+import { v4 as uuid } from 'uuid';
+
 import Div from './Components/Div';
 import Toolbar from './Components/Toolbar';
 
@@ -21,14 +23,30 @@ class App extends Component {
 
   addDiv = (style) => {
     const divs = [...this.state.divs];
+    const id = uuid();
     const divInfo = {
+      id: id,
       style: style,
       selected: false,
-      childDivs: []
+      childDivs: [],
+      parents: []
     };
     if (this.state.selected.length > 0) {
-      divInfo.style["z-index"] = 10;
-      divs[this.state.selected[0].index].childDivs.push(divInfo);
+      this.state.selected.forEach((item, index) => {
+        if (item.parents.length > 0) {
+          const parents = [...item.parents];
+          parents.push(item.index);
+          divInfo.parents = parents;
+          let current = divs[parents[0]];
+          for (let i = 1; i < parents.length; i++) {
+            current = current.childDivs[parents[i]];
+          }
+          current.childDivs.push(divInfo);
+        } else {
+          divInfo.parents.push(item.index);
+          divs[item.index].childDivs.push(divInfo);
+        }
+      });
     } else {
       divs.push(divInfo);
     }
@@ -47,16 +65,26 @@ class App extends Component {
     });
   }
 
-  select = (index, moveCoords) => {
+  select = (index, style, parents, moveCoords) => {
     const selected = [...this.state.selected];
     const divs = [...this.state.divs];
     const selection = {
       index: index,
-      style: divs[index].style,
+      style: style,
+      parents: parents,
       moveCoords: moveCoords
     };
     selected.push(selection);
-    divs[index].selected = true;
+    if (selection.parents.length > 0) {
+      let current = divs[selection.parents[0]];
+      for (let i = 1; i < selection.parents.length; i++) {
+        current = current.childDivs[selection.parents[i]];
+      }
+      console.log(current);
+      current.selected = true;
+    } else {
+      divs[index].selected = true;
+    }
 
     this.setState({
       selected,
@@ -129,11 +157,11 @@ class App extends Component {
             }
           }
         } >
-        <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} />
+        <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
           this.state.divs.map((item, index) => {
             return(
-              <Div selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={index} index={index} childDivs={item.childDivs} />
+              <Div selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} index={index} childDivs={item.childDivs} parents={item.parents} />
             );
           })
         }
