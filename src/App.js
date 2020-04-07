@@ -125,7 +125,18 @@ class App extends Component {
     };
     const divRefs = {...this.state.divRefs};
     if (this.state.moving && this.state.selected.length > 0) {
-      this.state.selected.forEach((id) => {
+        const id = this.state.selected[this.state.selected.length - 1];
+        let newSelected = [id];
+        if (this.state.selected.length > 1) {
+          newSelected = this.state.selected.filter((selectionId) => {
+            if (selectionId === id) {
+              return true;
+            } else {
+              divRefs[selectionId].selected = false;
+              return false;
+            }
+          });
+        }
         const selection = divRefs[id];
         const style = {...selection.style};
         let width, height;
@@ -140,10 +151,10 @@ class App extends Component {
         style.left = ((mouseCoords.x - selection.moveCoords.x) / width) * 100 + '%';
         selection.style = style;
         divRefs[id] = selection;
-      });
       
       this.setState({
-        divRefs
+        divRefs,
+        selected: newSelected
       });
     }
   }
