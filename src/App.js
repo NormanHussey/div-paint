@@ -11,7 +11,8 @@ class App extends Component {
     super();
     this.boardRef = React.createRef();
     this.state = {
-      divs: [],
+      divRefs: {},
+      divDisplay: [],
       selected: [],
       moving: false,
       mouseCoords: {
@@ -22,82 +23,66 @@ class App extends Component {
   }
 
   addDiv = (style) => {
-    const divs = [...this.state.divs];
+    const divDisplay = [...this.state.divDisplay];
+    const divRefs = {...this.state.divRefs};
     const id = uuid();
     const divInfo = {
       id: id,
       style: style,
       selected: false,
       childDivs: [],
-      parents: []
+      parent: 0,
+      moveCoords: {
+        X: 0,
+        y: 0
+      }
     };
+    divRefs[id] = divInfo;
+
     if (this.state.selected.length > 0) {
-      this.state.selected.forEach((item, index) => {
-        if (item.parents.length > 0) {
-          const parents = [...item.parents];
-          parents.push(item.index);
-          divInfo.parents = parents;
-          let current = divs[parents[0]];
-          for (let i = 1; i < parents.length; i++) {
-            current = current.childDivs[parents[i]];
-          }
-          current.childDivs.push(divInfo);
-        } else {
-          divInfo.parents.push(item.index);
-          divs[item.index].childDivs.push(divInfo);
-        }
+      this.state.selected.forEach((selection, index) => {
+        divRefs[id].parent = selection;
+        divRefs[selection].childDivs.push(divRefs[id]);
       });
-    } else {
-      divs.push(divInfo);
     }
+    
+    divDisplay.push(divRefs[id]);
+    
     this.setState({
-      divs
+      divDisplay,
+      divRefs
     });
   }
 
   changeDivs = (style) => {
-    const divs = [...this.state.divs];
+    const divDisplay = [...this.state.divDisplay];
     this.state.selected.forEach((selection) => {
-      divs[selection.index].style = style;
+      divDisplay[selection.index].style = style;
     });
     this.setState({
-      divs
+      divDisplay
     });
   }
 
-  select = (index, style, parents, moveCoords) => {
+  select = (id, moveCoords) => {
     const selected = [...this.state.selected];
-    const divs = [...this.state.divs];
-    const selection = {
-      index: index,
-      style: style,
-      parents: parents,
-      moveCoords: moveCoords
-    };
-    selected.push(selection);
-    if (selection.parents.length > 0) {
-      let current = divs[selection.parents[0]];
-      for (let i = 1; i < selection.parents.length; i++) {
-        current = current.childDivs[selection.parents[i]];
-      }
-      console.log(current);
-      current.selected = true;
-    } else {
-      divs[index].selected = true;
-    }
+    const divRefs = {...this.state.divRefs};
+    divRefs[id].selected = true;
+    divRefs[id].moveCoords = moveCoords;
+    selected.push(id);
 
     this.setState({
       selected,
-      divs
+      divRefs
     });
   }
 
-  unselect = (index) => {
+  unselect = (id) => {
     const selected = [...this.state.selected];
-    const divs = [...this.state.divs];
-    const newSelected = selected.filter((item) => {
-      if (item.index === index) {
-        divs[index].selected = false;
+    const divRefs = {...this.state.divRefs};
+    divRefs[id].selected = false;
+    const newSelected = selected.filter((selection) => {
+      if (selection === id) {
         return false;
       } else {
         return true;
@@ -105,17 +90,18 @@ class App extends Component {
     });
     this.setState({
       selected: newSelected,
-      divs
+      divRefs
     });
   }
 
   unselectAll = () => {
-    const divs = [...this.state.divs];
-    this.state.selected.forEach((item) => {
-      divs[item.index].selected = false;
+    const divRefs = {...this.state.divRefs};
+    this.state.selected.forEach((id) => {
+      divRefs[id].selected = false;
     });
+
     this.setState({
-      divs,
+      divRefs,
       selected: []
     });
   }
@@ -136,15 +122,18 @@ class App extends Component {
       height: this.boardRef.current.offsetHeight
     };
     if (this.state.moving && this.state.selected.length > 0) {
-      const divs = [...this.state.divs];
-      this.state.selected.forEach((selection) => {
-        const style = {...divs[selection.index].style};
+      const divRefs = {...this.state.divRefs};
+      this.state.selected.forEach((id) => {
+        // const selection = {...divRefs[id]};
+        const selection = divRefs[id];
+        const style = {...selection.style};
         style.top = ((mouseCoords.y - selection.moveCoords.y) / board.height) * 100 + '%';
         style.left = ((mouseCoords.x - selection.moveCoords.x) / board.width) * 100 + '%';
-        divs[selection.index].style = style;
+        selection.style = style;
       });
+      
       this.setState({
-        divs
+        divRefs
       });
     }
   }
@@ -159,10 +148,14 @@ class App extends Component {
         } >
         <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
-          this.state.divs.map((item, index) => {
-            return(
-              <Div selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} index={index} childDivs={item.childDivs} parents={item.parents} />
-            );
+          this.state.divDisplay.map((item, index) => {
+            if (item.parent === 0) {
+              return(
+                <Div selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parent={item.parent} />
+              );
+            } else {
+              return false;
+            }
           })
         }
       </div>

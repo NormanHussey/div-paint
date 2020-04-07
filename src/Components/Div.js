@@ -33,13 +33,10 @@ class Div extends Component {
     };
     // console.log(relativeCoords);
     if (!this.props.selected) {
-        this.props.select(this.props.index, this.props.style, this.props.parents, relativeCoords);
+        this.props.select(this.props.id, relativeCoords);
     } else {
-        this.props.unselect(this.props.index);
+        this.props.unselect(this.props.id);
     }
-    // this.setState({
-    //     position
-    // });
   }
 
   getMouseCoords = (e) => {
@@ -60,7 +57,7 @@ class Div extends Component {
           this.props.childDivs ?
           this.props.childDivs.map((item, index) => {
             return (
-              <Div selected={item.selected} select={this.props.select} unselect={this.props.unselect} style={item.style} key={item.id} index={index} childDivs={item.childDivs} parents={item.parents} />
+              <Div selected={item.selected} select={this.props.select} unselect={this.props.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parents={item.parents} />
             );
           })
           : null
