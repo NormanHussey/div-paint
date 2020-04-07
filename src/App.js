@@ -123,8 +123,8 @@ class App extends Component {
       width: this.boardRef.current.offsetWidth,
       height: this.boardRef.current.offsetHeight
     };
+    const divRefs = {...this.state.divRefs};
     if (this.state.moving && this.state.selected.length > 0) {
-      const divRefs = {...this.state.divRefs};
       this.state.selected.forEach((id) => {
         const selection = divRefs[id];
         const style = {...selection.style};
@@ -139,6 +139,7 @@ class App extends Component {
         style.top = ((mouseCoords.y - selection.moveCoords.y) / height) * 100 + '%';
         style.left = ((mouseCoords.x - selection.moveCoords.x) / width) * 100 + '%';
         selection.style = style;
+        divRefs[id] = selection;
       });
       
       this.setState({
