@@ -64,11 +64,13 @@ class App extends Component {
     });
   }
 
-  select = (id, moveCoords) => {
+  select = (id, moveCoords, dims) => {
     const selected = [...this.state.selected];
     const divRefs = {...this.state.divRefs};
     divRefs[id].selected = true;
     divRefs[id].moveCoords = moveCoords;
+    divRefs[id].width = dims.width;
+    divRefs[id].height = dims.height;
     selected.push(id);
 
     this.setState({
@@ -124,11 +126,18 @@ class App extends Component {
     if (this.state.moving && this.state.selected.length > 0) {
       const divRefs = {...this.state.divRefs};
       this.state.selected.forEach((id) => {
-        // const selection = {...divRefs[id]};
         const selection = divRefs[id];
         const style = {...selection.style};
-        style.top = ((mouseCoords.y - selection.moveCoords.y) / board.height) * 100 + '%';
-        style.left = ((mouseCoords.x - selection.moveCoords.x) / board.width) * 100 + '%';
+        let width, height;
+        if (selection.parent === 0) {
+          width = board.width;
+          height = board.height;
+        } else {
+          width = divRefs[selection.parent].width;
+          height = divRefs[selection.parent].height;
+        }
+        style.top = ((mouseCoords.y - selection.moveCoords.y) / height) * 100 + '%';
+        style.left = ((mouseCoords.x - selection.moveCoords.x) / width) * 100 + '%';
         selection.style = style;
       });
       
@@ -151,7 +160,7 @@ class App extends Component {
           this.state.divDisplay.map((item, index) => {
             if (item.parent === 0) {
               return(
-                <Div selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parent={item.parent} />
+                <Div updateDims={this.updateDims} selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parent={item.parent} />
               );
             } else {
               return false;

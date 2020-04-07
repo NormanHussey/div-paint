@@ -18,7 +18,9 @@ class Div extends Component {
   getPosition = () => {
     return {
       top: this.ref.current.offsetTop,
-      left: this.ref.current.offsetLeft
+      left: this.ref.current.offsetLeft,
+      width: this.ref.current.offsetWidth,
+      height: this.ref.current.offsetHeight
     };
   }
 
@@ -33,7 +35,7 @@ class Div extends Component {
     };
     // console.log(relativeCoords);
     if (!this.props.selected) {
-        this.props.select(this.props.id, relativeCoords);
+        this.props.select(this.props.id, relativeCoords, position);
     } else {
         this.props.unselect(this.props.id);
     }
@@ -57,7 +59,7 @@ class Div extends Component {
           this.props.childDivs ?
           this.props.childDivs.map((item, index) => {
             return (
-              <Div selected={item.selected} select={this.props.select} unselect={this.props.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parents={item.parents} />
+              <Div updateDims={this.props.updateDims} selected={item.selected} select={this.props.select} unselect={this.props.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parents={item.parents} />
             );
           })
           : null
