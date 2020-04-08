@@ -20,45 +20,51 @@ class App extends Component {
         x: 0,
         y: 0
       },
-      history: []
+      history: [],
+      redoState: {}
     };
   }
 
   componentDidMount() {
     const history = [];
-    history.push(this.state);
+    history.push({...this.state});
     this.setState({
       history
     });
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    console.log(prevState.divRefs === this.state.divRefs);
-    if (prevState.divRefs !== this.state.divRefs) {
-      const history = [...this.state.history];
-      history.push(this.state);
-      this.setState({
-        history
-      });
-    }
+  updateHistory = () => {
+    const history = [...this.state.history];
+    history.push({...this.state});
+    const redoState = {...this.state};
+    this.setState({
+      history,
+      redoState
+    });
   }
 
   undo = () => {
-    console.log(this.state.history);
+    console.log(this.state.divRefs);
     if (this.state.history.length > 1) {
       const history = [...this.state.history];
+      const redoState = {...history[history.length - 1]};
       history.pop();
       const lastState = history[history.length - 1];
+      const divRefs = {...lastState.divRefs};
+      const divDisplay = [...lastState.divDisplay];
+      const selected = [...lastState.selected];
+      console.log(lastState.divRefs);
       this.setState({
-        divRefs: lastState.divRefs,
-        divDisplay: lastState.divDisplay,
-        selected: lastState.selected,
+        divRefs,
+        divDisplay,
+        selected,
         moving: false,
         mouseCoords: {
           x: 0,
           y: 0
         },
-        history: lastState.history
+        history,
+        redoState
       });
     }
   }
@@ -104,7 +110,9 @@ class App extends Component {
     this.setState({
       divDisplay,
       divRefs
-    });
+    },
+      this.updateHistory
+    );
   }
 
   deleteChildren = (divRefs, id) => {
@@ -134,7 +142,9 @@ class App extends Component {
       selected: [],
       divDisplay,
       divRefs
-    });
+    },
+      this.updateHistory
+    );
   }
 
   changeDivs = (style) => {
@@ -176,7 +186,13 @@ class App extends Component {
     this.setState({
       selected: newSelected,
       divRefs
-    });
+    },
+      () => {
+        if (this.state.moving) {
+          this.updateHistory();
+        }
+      }
+    );
   }
 
   unselectAll = () => {
