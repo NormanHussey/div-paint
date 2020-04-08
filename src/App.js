@@ -25,28 +25,40 @@ class App extends Component {
   addDiv = (style) => {
     const divDisplay = [...this.state.divDisplay];
     const divRefs = {...this.state.divRefs};
-    const id = uuid();
-    const divInfo = {
-      id: id,
-      style: style,
-      selected: false,
-      childDivs: [],
-      parent: 0,
-      moveCoords: {
-        X: 0,
-        y: 0
-      }
-    };
-    divRefs[id] = divInfo;
+    const id = [uuid()];
 
     if (this.state.selected.length > 0) {
-      this.state.selected.forEach((selection, index) => {
-        divRefs[id].parent = selection;
-        divRefs[selection].childDivs.push(divRefs[id]);
+      this.state.selected.forEach((selection, i) => {
+        const divInfo = {
+          id: id[i],
+          style: style,
+          selected: false,
+          childDivs: [],
+          parent: selection,
+          moveCoords: {
+            X: 0,
+            y: 0
+          }
+        };
+        divRefs[id[i]] = divInfo;
+        divRefs[selection].childDivs.push(divRefs[id[i]]);
+        id.push(uuid());
       });
+    } else {
+      const divInfo = {
+        id: id[0],
+        style: style,
+        selected: false,
+        childDivs: [],
+        parent: 0,
+        moveCoords: {
+          X: 0,
+          y: 0
+        }
+      };
+      divRefs[id[0]] = divInfo;
+      divDisplay.push(divRefs[id[0]]);
     }
-    
-    divDisplay.push(divRefs[id]);
     
     this.setState({
       divDisplay,
@@ -170,13 +182,9 @@ class App extends Component {
         <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
           this.state.divDisplay.map((item, index) => {
-            if (item.parent === 0) {
-              return(
-                <Div updateDims={this.updateDims} selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parent={item.parent} />
-              );
-            } else {
-              return false;
-            }
+            return(
+              <Div updateDims={this.updateDims} selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parent={item.parent} />
+            );
           })
         }
       </div>
