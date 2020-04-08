@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 
 import { v4 as uuid } from 'uuid';
+import removeFromArray from './functions/removeFromArray';
 
 import Div from './Components/Div';
 import Toolbar from './Components/Toolbar';
@@ -61,6 +62,36 @@ class App extends Component {
     }
     
     this.setState({
+      divDisplay,
+      divRefs
+    });
+  }
+
+  deleteChildren = (divRefs, id) => {
+    if (divRefs[id].childDivs.length > 0) {
+      divRefs[id].childDivs.forEach((div) => {
+        this.deleteChildren(divRefs, div.id);
+        delete divRefs[id];
+      });
+    } else {
+      delete divRefs[id];
+    }
+  }
+
+  deleteDiv = () => {
+    const divRefs = {...this.state.divRefs};
+    const divDisplay = [...this.state.divDisplay];
+    this.state.selected.forEach((id) => {
+      if (divRefs[id].parent === 0) {
+        removeFromArray(divRefs[id], divDisplay);
+      } else if (divRefs[divRefs[id].parent] !== undefined) {
+        removeFromArray(divRefs[id], divRefs[divRefs[id].parent].childDivs);
+      }
+      this.deleteChildren(divRefs, id);
+    });
+
+    this.setState({
+      selected: [],
       divDisplay,
       divRefs
     });
@@ -179,7 +210,7 @@ class App extends Component {
             }
           }
         } >
-        <Toolbar toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+        <Toolbar deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
           this.state.divDisplay.map((item, index) => {
             return(
