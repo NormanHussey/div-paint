@@ -20,30 +20,47 @@ class App extends Component {
         x: 0,
         y: 0
       },
-      prevDivRefs: [],
-      prevDivDisplay: [],
-      prevSelected: []
+      history: []
     };
+  }
+
+  componentDidMount() {
+    const history = [];
+    history.push(this.state);
+    this.setState({
+      history
+    });
   }
 
   componentDidUpdate(prevProps, prevState) {
     console.log(prevState.divRefs === this.state.divRefs);
     if (prevState.divRefs !== this.state.divRefs) {
+      const history = [...this.state.history];
+      history.push(this.state);
       this.setState({
-        prevDivRefs: prevState.divRefs,
-        prevDivDisplay: prevState.divDisplay,
-        prevSelected: prevState.selected
+        history
       });
     }
   }
 
   undo = () => {
-    console.log('undo');
-    this.setState({
-      divRefs: this.state.prevDivRefs,
-      divDisplay: this.state.prevDivDisplay,
-      selected: this.state.prevSelected
-    });
+    console.log(this.state.history);
+    if (this.state.history.length > 1) {
+      const history = [...this.state.history];
+      history.pop();
+      const lastState = history[history.length - 1];
+      this.setState({
+        divRefs: lastState.divRefs,
+        divDisplay: lastState.divDisplay,
+        selected: lastState.selected,
+        moving: false,
+        mouseCoords: {
+          x: 0,
+          y: 0
+        },
+        history: lastState.history
+      });
+    }
   }
 
   addDiv = (style) => {
