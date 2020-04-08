@@ -114,6 +114,7 @@ class Toolbar extends Component {
         <button className={moveClass} onClick={this.toggleMove}>Move</button>
         <button onClick={this.props.unselectAll}>Unselect All</button>
         <button onClick={this.props.deleteDiv}>Delete</button>
+        <button onClick={this.props.undo}>Undo</button>
       </div>
     );
   }

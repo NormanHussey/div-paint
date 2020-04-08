@@ -19,8 +19,31 @@ class App extends Component {
       mouseCoords: {
         x: 0,
         y: 0
-      }
+      },
+      prevDivRefs: [],
+      prevDivDisplay: [],
+      prevSelected: []
     };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log(prevState.divRefs === this.state.divRefs);
+    if (prevState.divRefs !== this.state.divRefs) {
+      this.setState({
+        prevDivRefs: prevState.divRefs,
+        prevDivDisplay: prevState.divDisplay,
+        prevSelected: prevState.selected
+      });
+    }
+  }
+
+  undo = () => {
+    console.log('undo');
+    this.setState({
+      divRefs: this.state.prevDivRefs,
+      divDisplay: this.state.prevDivDisplay,
+      selected: this.state.prevSelected
+    });
   }
 
   addDiv = (style) => {
@@ -210,7 +233,7 @@ class App extends Component {
             }
           }
         } >
-        <Toolbar deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+        <Toolbar undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
           this.state.divDisplay.map((item, index) => {
             return(
