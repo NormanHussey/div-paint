@@ -6,8 +6,7 @@ class Toolbar extends Component {
     this.state = {
       newStyle: {
         backgroundColor: 'black'
-      },
-      moveActive: false
+      }
     }
   }
 
@@ -71,9 +70,9 @@ class Toolbar extends Component {
       e.stopPropagation();
     }
     this.props.toggleMove();
-    this.setState({
-      moveActive: !this.state.moveActive
-    });
+    // this.setState({
+    //   moveActive: !this.state.moveActive
+    // });
   }
 
   shortcutKey = (e) => {
@@ -89,7 +88,7 @@ class Toolbar extends Component {
 
   render() {
     let moveClass = '';
-    if (this.state.moveActive) {
+    if (this.props.moving) {
       moveClass = 'activeButton';
     }
     return(

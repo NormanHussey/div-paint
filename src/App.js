@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 
 import { v4 as uuid } from 'uuid';
+import _ from 'lodash';
 import removeFromArray from './functions/removeFromArray';
 
 import Div from './Components/Div';
@@ -27,7 +28,8 @@ class App extends Component {
 
   componentDidMount() {
     const history = [];
-    history.push({...this.state});
+    const stateClone = _.cloneDeep(this.state);
+    history.push(stateClone);
     this.setState({
       history
     });
@@ -35,8 +37,9 @@ class App extends Component {
 
   updateHistory = () => {
     const history = [...this.state.history];
-    history.push({...this.state});
-    const redoState = {...this.state};
+    const stateClone = _.cloneDeep(this.state);
+    history.push(stateClone);
+    const redoState = (stateClone);
     this.setState({
       history,
       redoState
@@ -44,16 +47,16 @@ class App extends Component {
   }
 
   undo = () => {
-    console.log(this.state.divRefs);
+    // console.log(this.state.divRefs);
     if (this.state.history.length > 1) {
       const history = [...this.state.history];
-      const redoState = {...history[history.length - 1]};
+      const redoState = history[history.length - 1];
       history.pop();
       const lastState = history[history.length - 1];
-      const divRefs = {...lastState.divRefs};
-      const divDisplay = [...lastState.divDisplay];
-      const selected = [...lastState.selected];
-      console.log(lastState.divRefs);
+      const divRefs = lastState.divRefs;
+      const divDisplay = lastState.divDisplay;
+      const selected = lastState.selected;
+      // console.log(lastState.divRefs);
       this.setState({
         divRefs,
         divDisplay,
@@ -204,13 +207,25 @@ class App extends Component {
     this.setState({
       divRefs,
       selected: []
-    });
+    },
+      () => {
+        if (this.state.moving) {
+          this.updateHistory();
+        }
+      }
+    );
   }
 
   toggleMove = () => {
     this.setState({
       moving: !this.state.moving
-    });
+    },
+      () => {
+        if (this.state.selected.length > 0) {
+          this.updateHistory();
+        }
+      }
+    );
   }
 
   handleMouseMove = (e) => {
@@ -266,7 +281,7 @@ class App extends Component {
             }
           }
         } >
-        <Toolbar undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+        <Toolbar moving={this.state.moving} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
           this.state.divDisplay.map((item, index) => {
             return(
