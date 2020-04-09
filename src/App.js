@@ -21,53 +21,105 @@ class App extends Component {
         x: 0,
         y: 0
       },
-      history: [],
+      history: {},
       redoState: {}
     };
   }
 
-  componentDidMount() {
-    const history = [];
-    const stateClone = _.cloneDeep(this.state);
-    history.push(stateClone);
-    this.setState({
-      history
-    });
-  }
+  // componentDidMount() {
+  //   const history = [];
+  //   const stateClone = _.cloneDeep(this.state);
+  //   history.push(stateClone);
+  //   this.setState({
+  //     history,
+  //     redoState: stateClone
+  //   });
+  // }
 
-  updateHistory = () => {
-    const history = [...this.state.history];
-    const stateClone = _.cloneDeep(this.state);
-    history.push(stateClone);
-    const redoState = (stateClone);
-    this.setState({
-      history,
-      redoState
-    });
+  // updateHistory = () => {
+  //   const history = [...this.state.history];
+  //   const stateClone = _.cloneDeep(this.state);
+  //   const redoState = _.cloneDeep(history[history.length - 1]);
+  //   history.push(stateClone);
+  //   this.setState({
+  //     history,
+  //     redoState
+  //   });
+  // }
+
+  cloneState = () => {
+   const stateClone = _.cloneDeep(this.state);
+  //  const stateClone = JSON.parse(JSON.stringify(this.state));
+  //  console.log(JSON.stringify(stateClone));
+   const history = {
+     divRefs: stateClone.divRefs,
+     divDisplay: stateClone.divDisplay,
+     selected: stateClone.selected
+   };
+   return history;
   }
 
   undo = () => {
     // console.log(this.state.divRefs);
-    if (this.state.history.length > 1) {
-      const history = [...this.state.history];
-      const redoState = history[history.length - 1];
-      history.pop();
-      const lastState = history[history.length - 1];
-      const divRefs = lastState.divRefs;
-      const divDisplay = lastState.divDisplay;
-      const selected = lastState.selected;
-      // console.log(lastState.divRefs);
+    // if (this.state.history.length > 1) {
+    //   const history = [...this.state.history];
+    //   const redoState = history[history.length - 1];
+    //   history.pop();
+    //   const lastState = history[history.length - 1];
+    //   const divRefs = lastState.divRefs;
+    //   const divDisplay = lastState.divDisplay;
+    //   const selected = lastState.selected;
+    //   // console.log(lastState.divRefs);
+    //   this.setState({
+    //     divRefs,
+    //     divDisplay,
+    //     selected,
+    //     moving: false,
+    //     mouseCoords: {
+    //       x: 0,
+    //       y: 0
+    //     },
+    //     history,
+    //     redoState
+    //   });
+    // }
+    if (this.state.history.divRefs && !(_.isEqual(this.state.history.divRefs, this.state.divRefs))) {
+      const stateClone = _.cloneDeep(this.state);
+      // const stateClone = JSON.parse(JSON.stringify(this.state));
+      const history = stateClone.history;
+      const redoState = {
+        divRefs: stateClone.divRefs,
+        divDisplay: stateClone.divDisplay,
+        selected: stateClone.selected
+      };
       this.setState({
-        divRefs,
-        divDisplay,
-        selected,
+        divRefs: history.divRefs,
+        divDisplay: history.divDisplay,
+        selected: history.selected,
         moving: false,
         mouseCoords: {
           x: 0,
           y: 0
         },
-        history,
         redoState
+      });
+    }
+  }
+
+  redo = () => {
+    if (this.state.redoState.divRefs) {
+      const stateClone = _.cloneDeep(this.state);
+      const redo = stateClone.redoState;
+      this.setState({
+        divRefs: redo.divRefs,
+        divDisplay: redo.divDisplay,
+        selected: redo.selected,
+        moving: false,
+        mouseCoords: {
+          x: 0,
+          y: 0
+        },
+        redoState: {}
       });
     }
   }
@@ -109,13 +161,11 @@ class App extends Component {
       divRefs[id[0]] = divInfo;
       divDisplay.push(divRefs[id[0]]);
     }
-    
     this.setState({
+      history: this.cloneState(),
       divDisplay,
       divRefs
-    },
-      this.updateHistory
-    );
+    });
   }
 
   deleteChildren = (divRefs, id) => {
@@ -142,12 +192,11 @@ class App extends Component {
     });
 
     this.setState({
+      history: this.cloneState(),
       selected: [],
       divDisplay,
       divRefs
-    },
-      this.updateHistory
-    );
+    });
   }
 
   changeDivs = (style) => {
@@ -172,7 +221,15 @@ class App extends Component {
     this.setState({
       selected,
       divRefs
-    });
+    },
+      () => {
+        if (this.state.moving) {
+          this.setState({
+            history: this.cloneState()
+          });
+        }
+      }
+    );
   }
 
   unselect = (id) => {
@@ -186,16 +243,11 @@ class App extends Component {
         return true;
       }
     });
+
     this.setState({
       selected: newSelected,
       divRefs
-    },
-      () => {
-        if (this.state.moving) {
-          this.updateHistory();
-        }
-      }
-    );
+    });
   }
 
   unselectAll = () => {
@@ -207,13 +259,7 @@ class App extends Component {
     this.setState({
       divRefs,
       selected: []
-    },
-      () => {
-        if (this.state.moving) {
-          this.updateHistory();
-        }
-      }
-    );
+    });
   }
 
   toggleMove = () => {
@@ -221,8 +267,10 @@ class App extends Component {
       moving: !this.state.moving
     },
       () => {
-        if (this.state.selected.length > 0) {
-          this.updateHistory();
+        if (this.state.moving && this.state.selected.length > 0) {
+          this.setState({
+            history: this.cloneState()
+          });
         }
       }
     );
@@ -281,7 +329,7 @@ class App extends Component {
             }
           }
         } >
-        <Toolbar moving={this.state.moving} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+        <Toolbar moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
           this.state.divDisplay.map((item, index) => {
             return(
