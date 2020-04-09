@@ -49,6 +49,7 @@ class App extends Component {
 
   cloneState = () => {
    const stateClone = _.cloneDeep(this.state);
+   console.log('cloneState', stateClone.divRefs);
   //  const stateClone = JSON.parse(JSON.stringify(this.state));
   //  console.log(JSON.stringify(stateClone));
    const history = {
@@ -87,6 +88,7 @@ class App extends Component {
       const stateClone = _.cloneDeep(this.state);
       // const stateClone = JSON.parse(JSON.stringify(this.state));
       const history = stateClone.history;
+      console.log('undo', stateClone.divRefs, stateClone.history.divRefs);
       const redoState = {
         divRefs: stateClone.divRefs,
         divDisplay: stateClone.divDisplay,
