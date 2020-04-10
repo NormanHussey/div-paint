@@ -48,42 +48,17 @@ class App extends Component {
   // }
 
   cloneState = () => {
-   const stateClone = _.cloneDeep(this.state);
-   console.log('cloneState', stateClone.divRefs);
-  //  const stateClone = JSON.parse(JSON.stringify(this.state));
-  //  console.log(JSON.stringify(stateClone));
+   const divRefsClone = _.cloneDeep(this.state.divRefs);
+   console.log('cloneState', divRefsClone);
    const history = {
-     divRefs: stateClone.divRefs,
-     divDisplay: stateClone.divDisplay,
-     selected: stateClone.selected
+     divRefs: divRefsClone,
+     divDisplay: [...this.state.divDisplay],
+     selected: [...this.state.selected]
    };
    return history;
   }
 
   undo = () => {
-    // console.log(this.state.divRefs);
-    // if (this.state.history.length > 1) {
-    //   const history = [...this.state.history];
-    //   const redoState = history[history.length - 1];
-    //   history.pop();
-    //   const lastState = history[history.length - 1];
-    //   const divRefs = lastState.divRefs;
-    //   const divDisplay = lastState.divDisplay;
-    //   const selected = lastState.selected;
-    //   // console.log(lastState.divRefs);
-    //   this.setState({
-    //     divRefs,
-    //     divDisplay,
-    //     selected,
-    //     moving: false,
-    //     mouseCoords: {
-    //       x: 0,
-    //       y: 0
-    //     },
-    //     history,
-    //     redoState
-    //   });
-    // }
     if (this.state.history.divRefs && !(_.isEqual(this.state.history.divRefs, this.state.divRefs))) {
       const stateClone = _.cloneDeep(this.state);
       // const stateClone = JSON.parse(JSON.stringify(this.state));
@@ -145,7 +120,7 @@ class App extends Component {
           }
         };
         divRefs[id[i]] = divInfo;
-        divRefs[selection].childDivs.push(divRefs[id[i]]);
+        divRefs[selection].childDivs.push(id[i]);
         id.push(uuid());
       });
     } else {
@@ -161,10 +136,11 @@ class App extends Component {
         }
       };
       divRefs[id[0]] = divInfo;
-      divDisplay.push(divRefs[id[0]]);
+      divDisplay.push(id[0]);
     }
+    const history = this.cloneState();
     this.setState({
-      history: this.cloneState(),
+      history,
       divDisplay,
       divRefs
     });
@@ -172,8 +148,8 @@ class App extends Component {
 
   deleteChildren = (divRefs, id) => {
     if (divRefs[id].childDivs.length > 0) {
-      divRefs[id].childDivs.forEach((div) => {
-        this.deleteChildren(divRefs, div.id);
+      divRefs[id].childDivs.forEach((divID) => {
+        this.deleteChildren(divRefs, divID);
         delete divRefs[id];
       });
     } else {
@@ -186,9 +162,9 @@ class App extends Component {
     const divDisplay = [...this.state.divDisplay];
     this.state.selected.forEach((id) => {
       if (divRefs[id].parent === 0) {
-        removeFromArray(divRefs[id], divDisplay);
+        removeFromArray(id, divDisplay);
       } else if (divRefs[divRefs[id].parent] !== undefined) {
-        removeFromArray(divRefs[id], divRefs[divRefs[id].parent].childDivs);
+        removeFromArray(id, divRefs[divRefs[id].parent].childDivs);
       }
       this.deleteChildren(divRefs, id);
     });
@@ -333,9 +309,10 @@ class App extends Component {
         } >
         <Toolbar moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
-          this.state.divDisplay.map((item, index) => {
+          this.state.divDisplay.map((id, index) => {
+            const div = this.state.divRefs[id];
             return(
-              <Div updateDims={this.updateDims} selected={item.selected} select={this.select} unselect={this.unselect} style={item.style} key={item.id} id={item.id} index={index} childDivs={item.childDivs} parent={item.parent} />
+              <Div divRefs={this.state.divRefs} updateDims={this.updateDims} selected={div.selected} select={this.select} unselect={this.unselect} style={div.style} key={div.id} id={div.id} index={index} childDivs={div.childDivs} parent={div.parent} />
             );
           })
         }
