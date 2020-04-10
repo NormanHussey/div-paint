@@ -102,6 +102,7 @@ class App extends Component {
   }
 
   addDiv = (style) => {
+    const history = this.cloneState();
     const divDisplay = [...this.state.divDisplay];
     const divRefs = {...this.state.divRefs};
     const id = [uuid()];
@@ -138,7 +139,6 @@ class App extends Component {
       divRefs[id[0]] = divInfo;
       divDisplay.push(id[0]);
     }
-    const history = this.cloneState();
     this.setState({
       history,
       divDisplay,
@@ -158,6 +158,7 @@ class App extends Component {
   }
 
   deleteDiv = () => {
+    const history = this.cloneState();
     const divRefs = {...this.state.divRefs};
     const divDisplay = [...this.state.divDisplay];
     this.state.selected.forEach((id) => {
@@ -170,7 +171,7 @@ class App extends Component {
     });
 
     this.setState({
-      history: this.cloneState(),
+      history,
       selected: [],
       divDisplay,
       divRefs
