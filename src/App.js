@@ -157,18 +157,23 @@ class App extends Component {
     });
   }
 
+  copyChildren = (clipboard, divRefs, id) => {
+    if (divRefs[id].childDivs.length > 0) {
+      divRefs[id].childDivs.forEach((divID) => {
+        this.copyChildren(clipboard, divRefs, divID);
+        clipboard.push(divRefs[id]);
+      });
+    } else {
+      clipboard.push(divRefs[id]);
+    }
+  }
+
   copyDiv = () => {
     if (this.state.selected.length > 0) {
       const clipboard = [];
+      const divRefs = _.cloneDeep(this.state.divRefs);
       this.state.selected.forEach((id, index) => {
-        const div = {...this.state.divRefs[id]};
-        clipboard.push(div);
-        // if (div.childDivs.length > 0) {
-        //   div.childDivs.forEach((childId) => {
-        //     const childDiv = {...this.state.divRefs[childId]};
-        //     clipboard.push(childDiv);
-        //   })
-        // }
+        this.copyChildren(clipboard, divRefs, id);
       });
       this.setState({
         clipboard
@@ -180,44 +185,121 @@ class App extends Component {
     if (this.state.clipboard.length > 0) {
       const history = this.cloneState();
       const divDisplay = [...this.state.divDisplay];
-      const divRefs = {...this.state.divRefs};
+      const divRefs = _.cloneDeep(this.state.divRefs);
       const id = [uuid()];
+
+      // const copiedIds = this.state.clipboard.map((div) => {
+      //   return div.id;
+      // });
+
+      const families = {};
+      this.state.clipboard.forEach((div, index) => {
+        // const newFamily = {
+        //   id: {
+        //     old: div.id,
+        //     new: id[index]
+        //   },
+        //   parent: {
+        //     old: div.parent,
+        //     new: 0
+        //   },
+        //   kids: {
+        //     old: div.childDivs,
+        //     new: []
+        //   }
+        // };
+        // families.push(newFamily);
+        families[div.id] = {
+          oldId: div.id,
+          newId: id[index],
+          oldParent: div.parent,
+          newParent: div.parent,
+          kids: []
+        };
+        id.push(uuid());
+      });
+
+      const familyIds = Object.keys(families);
+      familyIds.forEach((id) => {
+        if (families[id].oldParent !== 0 && families[families[id].oldParent] !== undefined) {
+          families[families[id].oldParent].kids.push(families[id].newId);
+          families[id].newParent = families[families[id].oldParent].newId;
+        }
+      });
+      
   
       this.state.clipboard.forEach((div, index) => {
-  
+        const family = families[div.id];
+        const newId = family.newId;
+
         if (this.state.selected.length > 0) {
             this.state.selected.forEach((selection, i) => {
+              let newParent;
+              if (family.newParent === 0) {
+                newParent = selection;
+              } else {
+                newParent = family.newParent;
+              }
               const divInfo = {
-                id: id[index],
+                id: newId,
                 style: div.style,
                 selected: false,
-                childDivs: [],
-                parent: selection,
+                childDivs: family.kids,
+                parent: newParent,
                 moveCoords: {
                   X: 0,
                   y: 0
                 }
               };
-              divRefs[id[index]] = divInfo;
-              divRefs[selection].childDivs.push(id[index]);
+              divRefs[newId] = divInfo;
+              divRefs[selection].childDivs.push(newId);
             });
           } else {
             const divInfo = {
-              id: id[index],
+              id: newId,
               style: div.style,
               selected: false,
-              childDivs: [],
-              parent: 0,
+              childDivs: family.kids,
+              parent: family.newParent,
               moveCoords: {
                 X: 0,
                 y: 0
               }
             };
-            divRefs[id[index]] = divInfo;
-            divDisplay.push(id[index]);
+            divRefs[newId] = divInfo;
+            if (divInfo.parent === 0) {
+              divDisplay.push(newId);
+            }
           }
-          id.push(uuid());
+          // console.log(div.childDivs);
+          // if (div.childDivs.length > 0) {
+          //   families[index].parent.new = id[index];
+          // } else {
+          //   copiedIds.forEach((copyId) => {
+          //     if (div.parent === copyId) {
+          //       families.forEach((family) => {
+          //         if (family.parent.old === div.parent) {
+          //           family.newKids.push(id[index]);
+          //           // divRefs[id[index]].parent = family.parent.new;
+          //           console.log(family);
+          //         }
+          //       });
+          //     }
+          //   });
+          // }
+          // id.push(uuid());
       });
+
+      // families.forEach((family) => {
+      //   const parent = divRefs[family.parent.new];
+      //   parent.childDivs = family.newKids;
+      //   parent.childDivs.forEach((kid) => {
+      //     divRefs[kid].parent = family.parent.new;
+      //   });
+      //   if (parent.parent === 0) {
+          
+      //   }
+      // });
   
       this.setState({
         history,
