@@ -188,27 +188,8 @@ class App extends Component {
       const divRefs = _.cloneDeep(this.state.divRefs);
       const id = [uuid()];
 
-      // const copiedIds = this.state.clipboard.map((div) => {
-      //   return div.id;
-      // });
-
       const families = {};
       this.state.clipboard.forEach((div, index) => {
-        // const newFamily = {
-        //   id: {
-        //     old: div.id,
-        //     new: id[index]
-        //   },
-        //   parent: {
-        //     old: div.parent,
-        //     new: 0
-        //   },
-        //   kids: {
-        //     old: div.childDivs,
-        //     new: []
-        //   }
-        // };
-        // families.push(newFamily);
         families[div.id] = {
           oldId: div.id,
           newId: id[index],
@@ -226,14 +207,44 @@ class App extends Component {
           families[id].newParent = families[families[id].oldParent].newId;
         }
       });
-      
-  
-      this.state.clipboard.forEach((div, index) => {
-        const family = families[div.id];
-        const newId = family.newId;
 
-        if (this.state.selected.length > 0) {
-            this.state.selected.forEach((selection, i) => {
+      if (this.state.selected.length === 0) {
+        this.state.clipboard.forEach((div, index) => {
+          const family = families[div.id];
+          const newId = family.newId;
+          const divInfo = {
+            id: newId,
+            style: div.style,
+            selected: false,
+            childDivs: family.kids,
+            parent: family.newParent,
+            moveCoords: {
+              X: 0,
+              y: 0
+            }
+          };
+          divRefs[newId] = divInfo;
+          if (divInfo.parent === 0) {
+            divDisplay.push(newId);
+          }
+        });
+      } else { // something(s) are selected
+
+        this.state.selected.forEach((selection, i) => {
+            const newFamilies = _.cloneDeep(families);
+            const newFamilyIds = Object.keys(newFamilies);
+            newFamilyIds.forEach((id) => {
+              newFamilies[id].newId = i + newFamilies[id].newId;
+              const newKids = newFamilies[id].kids.map((kid) => {
+                return i + kid;
+              });
+              newFamilies[id].kids = newKids;
+              newFamilies[id].newParent = i + newFamilies[id].newParent;
+            });
+
+            this.state.clipboard.forEach((div, index) => {
+              const family = newFamilies[div.id];
+              const newId = family.newId;
               let newParent;
               if (family.newParent === 0) {
                 newParent = selection;
@@ -251,55 +262,24 @@ class App extends Component {
                   y: 0
                 }
               };
-              divRefs[newId] = divInfo;
-              divRefs[selection].childDivs.push(newId);
-            });
-          } else {
-            const divInfo = {
-              id: newId,
-              style: div.style,
-              selected: false,
-              childDivs: family.kids,
-              parent: family.newParent,
-              moveCoords: {
-                X: 0,
-                y: 0
-              }
-            };
-            divRefs[newId] = divInfo;
-            if (divInfo.parent === 0) {
-              divDisplay.push(newId);
-            }
-          }
-          // console.log(div.childDivs);
-          // if (div.childDivs.length > 0) {
-          //   families[index].parent.new = id[index];
-          // } else {
-          //   copiedIds.forEach((copyId) => {
-          //     if (div.parent === copyId) {
-          //       families.forEach((family) => {
-          //         if (family.parent.old === div.parent) {
-          //           family.newKids.push(id[index]);
-          //           // divRefs[id[index]].parent = family.parent.new;
-          //           console.log(family);
-          //         }
-          //       });
-          //     }
-          //   });
-          // }
-          // id.push(uuid());
-      });
 
-      // families.forEach((family) => {
-      //   const parent = divRefs[family.parent.new];
-      //   parent.childDivs = family.newKids;
-      //   parent.childDivs.forEach((kid) => {
-      //     divRefs[kid].parent = family.parent.new;
-      //   });
-      //   if (parent.parent === 0) {
-          
-      //   }
-      // });
+              divRefs[newId] = divInfo;
+
+            });
+
+            this.state.clipboard.forEach((div, index) => {
+              const family = newFamilies[div.id];
+              const newId = family.newId;
+              const newDiv = divRefs[newId];
+              if (divRefs[newDiv.parent] !== undefined) {
+                const childDivs = divRefs[newDiv.parent].childDivs;
+                if (!childDivs.includes(newId)) {
+                  divRefs[newDiv.parent].childDivs.push(newId);
+                }
+              }
+            });
+        });
+      }
   
       this.setState({
         history,
