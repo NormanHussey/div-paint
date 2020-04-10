@@ -115,6 +115,8 @@ class Toolbar extends Component {
         <button onClick={this.props.deleteDiv}>Delete</button>
         <button onClick={this.props.undo}>Undo</button>
         <button onClick={this.props.redo}>Redo</button>
+        <button onClick={this.props.copyDiv}>Copy</button>
+        <button onClick={this.props.pasteDiv}>Paste</button>
       </div>
     );
   }

@@ -22,34 +22,14 @@ class App extends Component {
         y: 0
       },
       history: {},
-      redoState: {}
+      redoState: {},
+      clipboard: []
     };
   }
 
-  // componentDidMount() {
-  //   const history = [];
-  //   const stateClone = _.cloneDeep(this.state);
-  //   history.push(stateClone);
-  //   this.setState({
-  //     history,
-  //     redoState: stateClone
-  //   });
-  // }
-
-  // updateHistory = () => {
-  //   const history = [...this.state.history];
-  //   const stateClone = _.cloneDeep(this.state);
-  //   const redoState = _.cloneDeep(history[history.length - 1]);
-  //   history.push(stateClone);
-  //   this.setState({
-  //     history,
-  //     redoState
-  //   });
-  // }
-
   cloneState = () => {
    const divRefsClone = _.cloneDeep(this.state.divRefs);
-   console.log('cloneState', divRefsClone);
+  //  console.log('cloneState', divRefsClone);
    const history = {
      divRefs: divRefsClone,
      divDisplay: [...this.state.divDisplay],
@@ -61,9 +41,8 @@ class App extends Component {
   undo = () => {
     if (this.state.history.divRefs && !(_.isEqual(this.state.history.divRefs, this.state.divRefs))) {
       const stateClone = _.cloneDeep(this.state);
-      // const stateClone = JSON.parse(JSON.stringify(this.state));
       const history = stateClone.history;
-      console.log('undo', stateClone.divRefs, stateClone.history.divRefs);
+      // console.log('undo', stateClone.divRefs, stateClone.history.divRefs);
       const redoState = {
         divRefs: stateClone.divRefs,
         divDisplay: stateClone.divDisplay,
@@ -176,6 +155,76 @@ class App extends Component {
       divDisplay,
       divRefs
     });
+  }
+
+  copyDiv = () => {
+    if (this.state.selected.length > 0) {
+      const clipboard = [];
+      this.state.selected.forEach((id, index) => {
+        const div = {...this.state.divRefs[id]};
+        clipboard.push(div);
+        // if (div.childDivs.length > 0) {
+        //   div.childDivs.forEach((childId) => {
+        //     const childDiv = {...this.state.divRefs[childId]};
+        //     clipboard.push(childDiv);
+        //   })
+        // }
+      });
+      this.setState({
+        clipboard
+      });
+    }
+  }
+
+  pasteDiv = () => {
+    if (this.state.clipboard.length > 0) {
+      const history = this.cloneState();
+      const divDisplay = [...this.state.divDisplay];
+      const divRefs = {...this.state.divRefs};
+      const id = [uuid()];
+  
+      this.state.clipboard.forEach((div, index) => {
+  
+        if (this.state.selected.length > 0) {
+            this.state.selected.forEach((selection, i) => {
+              const divInfo = {
+                id: id[index],
+                style: div.style,
+                selected: false,
+                childDivs: [],
+                parent: selection,
+                moveCoords: {
+                  X: 0,
+                  y: 0
+                }
+              };
+              divRefs[id[index]] = divInfo;
+              divRefs[selection].childDivs.push(id[index]);
+            });
+          } else {
+            const divInfo = {
+              id: id[index],
+              style: div.style,
+              selected: false,
+              childDivs: [],
+              parent: 0,
+              moveCoords: {
+                X: 0,
+                y: 0
+              }
+            };
+            divRefs[id[index]] = divInfo;
+            divDisplay.push(id[index]);
+          }
+          id.push(uuid());
+      });
+  
+      this.setState({
+        history,
+        divDisplay,
+        divRefs
+      });
+    }
   }
 
   changeDivs = (style) => {
@@ -308,7 +357,7 @@ class App extends Component {
             }
           }
         } >
-        <Toolbar moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+        <Toolbar copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
         {
           this.state.divDisplay.map((id, index) => {
             const div = this.state.divRefs[id];
