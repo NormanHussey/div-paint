@@ -30,9 +30,30 @@ class Toolbar extends Component {
     });
   }
 
-  handleTopPos = (e) => {
+  handleInputs = (e) => {
     const newStyle = {...this.state.newStyle};
-    newStyle.top = e.target.value + this.state.units.top;
+
+    switch (e.target.className) {
+      case 'topInput':
+        newStyle.top = e.target.value + this.state.units.top;
+        break;
+
+      case 'leftInput':
+        newStyle.left = e.target.value + this.state.units.left;
+        break;
+
+      case 'widthInput':
+        newStyle.width = e.target.value + this.state.units.width;
+        break;
+
+      case 'heightInput':
+        newStyle.height = e.target.value + this.state.units.height;
+        break;
+
+      default:
+        // do nothing
+    }
+
     this.setState({
       newStyle
     });
@@ -63,30 +84,6 @@ class Toolbar extends Component {
     this.setState({
       units
     })
-  }
-
-  handleLeftPos = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle.left = e.target.value + this.state.units.left;
-    this.setState({
-      newStyle
-    });
-  }
-
-  handleWidth = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle.width = e.target.value + this.state.units.width;
-    this.setState({
-      newStyle
-    });
-  }
-
-  handleHeight = (e) => {
-    const newStyle = {...this.state.newStyle};
-    newStyle.height = e.target.value + this.state.units.height;
-    this.setState({
-      newStyle
-    });
   }
 
   handleBgColour = (e) => {
@@ -133,7 +130,7 @@ class Toolbar extends Component {
           <form onSubmit={this.handleSubmit}>
             <div className="sizeInput">
               <label htmlFor="top">Top:</label>
-              <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" required/>
+              <input className="topInput" onChange={this.handleInputs} type="number" min="0" max="100" id="top" required/>
               <select className="topUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>
@@ -146,7 +143,7 @@ class Toolbar extends Component {
             </div>
             <div className="sizeInput">
               <label htmlFor="left">Left:</label>
-              <input onChange={this.handleLeftPos} type="number" min="0" max="100" id="left" required/>
+              <input className="leftInput" onChange={this.handleInputs} type="number" min="0" max="100" id="left" required/>
               <select className="leftUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>
@@ -159,7 +156,7 @@ class Toolbar extends Component {
             </div>
             <div className="sizeInput">
               <label htmlFor="width">Width:</label>
-              <input onChange={this.handleWidth} type="number" min="0" max="100" id="width" required/>
+              <input className="widthInput" onChange={this.handleInputs} type="number" min="0" max="100" id="width" required/>
               <select className="widthUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>
@@ -172,7 +169,7 @@ class Toolbar extends Component {
             </div>
             <div className="sizeInput">
               <label htmlFor="height">Height:</label>
-              <input onChange={this.handleHeight} type="number" min="0" max="100" id="height" required/>
+              <input className="heightInput" onChange={this.handleInputs} type="number" min="0" max="100" id="height" required/>
               <select className="heightUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>
