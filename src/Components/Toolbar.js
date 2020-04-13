@@ -6,7 +6,8 @@ class Toolbar extends Component {
     this.state = {
       newStyle: {
         backgroundColor: 'black'
-      }
+      },
+      openNew: false
     }
   }
 
@@ -17,12 +18,10 @@ class Toolbar extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // if (!this.props.selected) {
-    //   this.props.addDiv(this.state.newStyle);
-    // } else {
-    //   this.props.changeDivs(this.state.newStyle);
-    // }
     this.props.addDiv(this.state.newStyle);
+    this.setState({
+      openNew: false
+    });
   }
 
   handleTopPos = (e) => {
@@ -70,9 +69,6 @@ class Toolbar extends Component {
       e.stopPropagation();
     }
     this.props.toggleMove();
-    // this.setState({
-    //   moveActive: !this.state.moveActive
-    // });
   }
 
   shortcutKey = (e) => {
@@ -86,6 +82,12 @@ class Toolbar extends Component {
     }
   }
 
+  toggleNew = () => {
+    this.setState({
+      openNew: !this.state.openNew
+    });
+  }
+
   render() {
     let moveClass = '';
     if (this.props.moving) {
@@ -93,23 +95,28 @@ class Toolbar extends Component {
     }
     return(
       <div className="toolbar">
-        <form onSubmit={this.handleSubmit}>
-          <label htmlFor="top">Top:</label>
-          <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" />
-          <label htmlFor="left">Left:</label>
-          <input onChange={this.handleLeftPos} type="number" min="0" max="100" id="left" />
-          <label htmlFor="width">Width:</label>
-          <input onChange={this.handleWidth} type="number" min="0" max="100" id="width" />
-          <label htmlFor="height">Height:</label>
-          <input onChange={this.handleHeight} type="number" min="0" max="100" id="height" />
-          <label htmlFor="bgColour">Background-Color:</label>
-          <input onChange={this.handleBgColour} type="color" id="bgColour" />
-          <button type="submit">
-              {
-                this.props.selected ? 'Add Child' : 'Add'
-              }
-          </button>
-        </form>
+        {
+          this.state.openNew ? 
+          <form onSubmit={this.handleSubmit}>
+            <label htmlFor="top">Top:</label>
+            <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" required/>
+            <label htmlFor="left">Left:</label>
+            <input onChange={this.handleLeftPos} type="number" min="0" max="100" id="left" required/>
+            <label htmlFor="width">Width:</label>
+            <input onChange={this.handleWidth} type="number" min="0" max="100" id="width" required/>
+            <label htmlFor="height">Height:</label>
+            <input onChange={this.handleHeight} type="number" min="0" max="100" id="height" required/>
+            <label htmlFor="bgColour">Background-Color:</label>
+            <input onChange={this.handleBgColour} type="color" id="bgColour" />
+            <button type="submit">
+                {
+                  this.props.selected ? 'Add Child' : 'Add'
+                }
+            </button>
+          </form>
+          : null
+        }
+        <button onClick={this.toggleNew}>{ this.state.openNew ? "Cancel" : "New" }</button>
         <button className={moveClass} onClick={this.toggleMove}>Move</button>
         <button onClick={this.props.unselectAll}>Unselect All</button>
         <button onClick={this.props.deleteDiv}>Delete</button>
