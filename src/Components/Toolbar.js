@@ -139,6 +139,10 @@ class Toolbar extends Component {
         {
           this.state.openNew ? 
           <form onSubmit={this.handleSubmit}>
+            <div className="nameInput">
+              <label htmlFor="divName">Name:</label>
+              <input id="divName" name="divName" />
+            </div>
             <div className="sizeInput">
               <label htmlFor="top">Top:</label>
               <input className="topInput" onChange={this.handleInputs} type="number" min="0" max="100" id="top" required/>
@@ -191,11 +195,13 @@ class Toolbar extends Component {
                 <option value="vmax">vmax</option>
               </select>
             </div>
-            <label htmlFor="bgColour">Background:</label>
-            <input onChange={this.handleBgColour} type="color" id="bgColour" />
+            <div>
+              <label htmlFor="bgColour">Background:</label>
+              <input onChange={this.handleBgColour} type="color" id="bgColour" />
+            </div>
             <button type="submit">
                 {
-                  this.props.selected ? 'Add Child' : 'Add'
+                  this.props.selected.length > 0 ? 'Add Child' : 'Add'
                 }
             </button>
           </form>

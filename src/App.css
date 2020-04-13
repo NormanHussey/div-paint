@@ -15,7 +15,7 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
 }
 
 .mainContainer {
-  flex-basis: 90%;
+  flex-basis: 80%;
   position: relative;
   height: 100%;
   background-color: transparent;
@@ -35,8 +35,6 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
 .toolbar button {
   width: 100%;
   padding: 2vh 0;
-  /* border-style: none; */
-
 }
 
 .newDiv {
@@ -58,10 +56,15 @@ form {
   width: 15vw;
   display: flex;
   flex-direction: column;
-  /* flex-wrap: wrap; */
   background-color: lightgrey;
   padding: 0.5vmax 1vmax;
   border: 1px solid black;
+}
+
+form > div {
+  margin: 2.5% 0;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -76,10 +79,16 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+input[type=color] {
+  width: 50%;
+}
+
+.nameInput {
+  width: 100%;
+}
+
 .sizeInput {
   width: 100%;
-  display: flex;
-  justify-content: space-evenly;
 }
 
 .sizeInput label {
@@ -96,4 +105,10 @@ input[type=number] {
 
 .activeButton {
   background-color: red;
+}
+
+.details {
+  flex-basis: 10%;
+  height: 100%;
+  background-color: slategrey;
 }

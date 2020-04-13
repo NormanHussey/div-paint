@@ -7,6 +7,7 @@ import removeFromArray from './functions/removeFromArray';
 
 import Div from './Components/Div';
 import Toolbar from './Components/Toolbar';
+import Details from './Components/Details';
 
 class App extends Component {
   constructor() {
@@ -420,7 +421,7 @@ class App extends Component {
     return (
       <div className="app">
 
-        <Toolbar cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+        <Toolbar cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected} unselectAll={this.unselectAll} />
 
         <div ref={this.boardRef} className="mainContainer" onMouseMove={ (e) => {
             if (this.state.moving) {
@@ -437,6 +438,8 @@ class App extends Component {
             })
           }
         </div>
+
+        <Details />
       </div>
     );
   }
