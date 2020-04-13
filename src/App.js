@@ -413,21 +413,25 @@ class App extends Component {
 
   render() {
     return (
-      <div ref={this.boardRef} className="mainContainer" onMouseMove={ (e) => {
+      <div className="app">
+
+        <Toolbar copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+
+        <div ref={this.boardRef} className="mainContainer" onMouseMove={ (e) => {
             if (this.state.moving) {
               this.handleMouseMove(e);
             }
           }
-        } >
-        <Toolbar copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
-        {
-          this.state.divDisplay.map((id, index) => {
-            const div = this.state.divRefs[id];
-            return(
-              <Div divRefs={this.state.divRefs} updateDims={this.updateDims} selected={div.selected} select={this.select} unselect={this.unselect} style={div.style} key={div.id} id={div.id} index={index} childDivs={div.childDivs} parent={div.parent} />
-            );
-          })
-        }
+        }>
+          {
+            this.state.divDisplay.map((id, index) => {
+              const div = this.state.divRefs[id];
+              return(
+                <Div divRefs={this.state.divRefs} updateDims={this.updateDims} selected={div.selected} select={this.select} unselect={this.unselect} style={div.style} key={div.id} id={div.id} index={index} childDivs={div.childDivs} parent={div.parent} />
+              );
+            })
+          }
+        </div>
       </div>
     );
   }

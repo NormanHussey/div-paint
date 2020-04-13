@@ -8,11 +8,35 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
 
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;}
 
-.mainContainer {
-  position: relative;
+.app {
   width: 100%;
   height: 100vh;
-  /* background-color: white; */
+  display: flex;
+}
+
+.mainContainer {
+  flex-basis: 90%;
+  position: relative;
+  height: 100%;
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.toolbar {
+  position: relative;
+  flex-basis: 10%;;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
+  background-color: slategrey;
+}
+
+.toolbar button {
+  width: 100%;
+  padding: 2vh 0;
+  /* border-style: none; */
+
 }
 
 .newDiv {
@@ -26,18 +50,48 @@ html { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: 
   outline: 2px dotted red;
 }
 
-.toolbar {
+form {
   position: absolute;
   top: 0;
-  left: 0;
-  width: 10%;
+  left: 100%;
   z-index: 10;
-}
-
-form {
-  width: 100%;
+  width: 15vw;
   display: flex;
   flex-direction: column;
+  /* flex-wrap: wrap; */
+  background-color: lightgrey;
+  padding: 0.5vmax 1vmax;
+  border: 1px solid black;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.sizeInput {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.sizeInput label {
+  width: 30%;
+}
+
+.sizeInput input {
+  width: 30%;
+}
+
+.sizeInput select {
+  width: 30%;
 }
 
 .activeButton {

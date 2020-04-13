@@ -7,7 +7,13 @@ class Toolbar extends Component {
       newStyle: {
         backgroundColor: 'black'
       },
-      openNew: false
+      openNew: false,
+      units: {
+        top: '%',
+        left: '%',
+        width: '%',
+        height: '%'
+      }
     }
   }
 
@@ -26,15 +32,42 @@ class Toolbar extends Component {
 
   handleTopPos = (e) => {
     const newStyle = {...this.state.newStyle};
-    newStyle.top = e.target.value + '%';
+    newStyle.top = e.target.value + this.state.units.top;
     this.setState({
       newStyle
     });
   }
 
+  handleUnits = (e) => {
+    const units = {...this.state.units};
+    switch (e.target.className) {
+      case 'topUnit':
+        units.top = e.target.value;
+        break;
+
+      case 'leftUnit':
+        units.left = e.target.value;
+        break;
+
+      case 'widthUnit':
+        units.width = e.target.value;
+        break;
+
+      case 'heightUnit':
+        units.height = e.target.value;
+        break;
+
+      default:
+        // do nothing
+    }
+    this.setState({
+      units
+    })
+  }
+
   handleLeftPos = (e) => {
     const newStyle = {...this.state.newStyle};
-    newStyle.left = e.target.value + '%';
+    newStyle.left = e.target.value + this.state.units.left;
     this.setState({
       newStyle
     });
@@ -42,7 +75,7 @@ class Toolbar extends Component {
 
   handleWidth = (e) => {
     const newStyle = {...this.state.newStyle};
-    newStyle.width = e.target.value + '%';
+    newStyle.width = e.target.value + this.state.units.width;
     this.setState({
       newStyle
     });
@@ -50,7 +83,7 @@ class Toolbar extends Component {
 
   handleHeight = (e) => {
     const newStyle = {...this.state.newStyle};
-    newStyle.height = e.target.value + '%';
+    newStyle.height = e.target.value + this.state.units.height;
     this.setState({
       newStyle
     });
@@ -98,15 +131,59 @@ class Toolbar extends Component {
         {
           this.state.openNew ? 
           <form onSubmit={this.handleSubmit}>
-            <label htmlFor="top">Top:</label>
-            <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" required/>
-            <label htmlFor="left">Left:</label>
-            <input onChange={this.handleLeftPos} type="number" min="0" max="100" id="left" required/>
-            <label htmlFor="width">Width:</label>
-            <input onChange={this.handleWidth} type="number" min="0" max="100" id="width" required/>
-            <label htmlFor="height">Height:</label>
-            <input onChange={this.handleHeight} type="number" min="0" max="100" id="height" required/>
-            <label htmlFor="bgColour">Background-Color:</label>
+            <div className="sizeInput">
+              <label htmlFor="top">Top:</label>
+              <input onChange={this.handleTopPos} type="number" min="0" max="100" id="top" required/>
+              <select className="topUnit" onChange={this.handleUnits}>
+                <option value="%">%</option>
+                <option value="px">px</option>
+                <option value="rem">rem</option>
+                <option value="vw">vw</option>
+                <option value="vh">vh</option>
+                <option value="vmin">vmin</option>
+                <option value="vmax">vmax</option>
+              </select>
+            </div>
+            <div className="sizeInput">
+              <label htmlFor="left">Left:</label>
+              <input onChange={this.handleLeftPos} type="number" min="0" max="100" id="left" required/>
+              <select className="leftUnit" onChange={this.handleUnits}>
+                <option value="%">%</option>
+                <option value="px">px</option>
+                <option value="rem">rem</option>
+                <option value="vw">vw</option>
+                <option value="vh">vh</option>
+                <option value="vmin">vmin</option>
+                <option value="vmax">vmax</option>
+              </select>
+            </div>
+            <div className="sizeInput">
+              <label htmlFor="width">Width:</label>
+              <input onChange={this.handleWidth} type="number" min="0" max="100" id="width" required/>
+              <select className="widthUnit" onChange={this.handleUnits}>
+                <option value="%">%</option>
+                <option value="px">px</option>
+                <option value="rem">rem</option>
+                <option value="vw">vw</option>
+                <option value="vh">vh</option>
+                <option value="vmin">vmin</option>
+                <option value="vmax">vmax</option>
+              </select>
+            </div>
+            <div className="sizeInput">
+              <label htmlFor="height">Height:</label>
+              <input onChange={this.handleHeight} type="number" min="0" max="100" id="height" required/>
+              <select className="heightUnit" onChange={this.handleUnits}>
+                <option value="%">%</option>
+                <option value="px">px</option>
+                <option value="rem">rem</option>
+                <option value="vw">vw</option>
+                <option value="vh">vh</option>
+                <option value="vmin">vmin</option>
+                <option value="vmax">vmax</option>
+              </select>
+            </div>
+            <label htmlFor="bgColour">Background:</label>
             <input onChange={this.handleBgColour} type="color" id="bgColour" />
             <button type="submit">
                 {
