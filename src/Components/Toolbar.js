@@ -5,7 +5,11 @@ class Toolbar extends Component {
     super();
     this.state = {
       newStyle: {
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0
       },
       openNew: false,
       units: {
@@ -61,28 +65,35 @@ class Toolbar extends Component {
 
   handleUnits = (e) => {
     const units = {...this.state.units};
+    const newStyle = {...this.state.newStyle};
+
     switch (e.target.className) {
       case 'topUnit':
         units.top = e.target.value;
+        newStyle.top = parseInt(newStyle.top) + units.top;
         break;
 
       case 'leftUnit':
         units.left = e.target.value;
+        newStyle.left = parseInt(newStyle.left) + units.left;
         break;
 
       case 'widthUnit':
         units.width = e.target.value;
+        newStyle.width = parseInt(newStyle.width) + units.width;
         break;
 
       case 'heightUnit':
         units.height = e.target.value;
+        newStyle.height = parseInt(newStyle.height) + units.height;
         break;
 
       default:
         // do nothing
     }
     this.setState({
-      units
+      units,
+      newStyle
     })
   }
 
