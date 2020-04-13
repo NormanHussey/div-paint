@@ -181,6 +181,11 @@ class App extends Component {
     }
   }
 
+  cutDiv = () => {
+    this.copyDiv();
+    this.deleteDiv();
+  }
+
   pasteDiv = () => {
     if (this.state.clipboard.length > 0) {
       const history = this.cloneState();
@@ -415,7 +420,7 @@ class App extends Component {
     return (
       <div className="app">
 
-        <Toolbar copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
+        <Toolbar cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected.length > 0} unselectAll={this.unselectAll} />
 
         <div ref={this.boardRef} className="mainContainer" onMouseMove={ (e) => {
             if (this.state.moving) {

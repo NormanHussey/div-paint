@@ -209,6 +209,7 @@ class Toolbar extends Component {
         <button onClick={this.props.redo}>Redo</button>
         <button onClick={this.props.copyDiv}>Copy</button>
         <button onClick={this.props.pasteDiv}>Paste</button>
+        <button onClick={this.props.cutDiv}>Cut</button>
       </div>
     );
   }
