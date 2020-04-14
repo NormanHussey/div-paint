@@ -139,10 +139,6 @@ class Toolbar extends Component {
         {
           this.state.openNew ? 
           <form onSubmit={this.handleSubmit}>
-            <div className="nameInput">
-              <label htmlFor="divName">Name:</label>
-              <input id="divName" name="divName" />
-            </div>
             <div className="sizeInput">
               <label htmlFor="top">Top:</label>
               <input className="topInput" onChange={this.handleInputs} type="number" min="0" max="100" id="top" required/>

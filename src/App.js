@@ -89,8 +89,10 @@ class App extends Component {
 
     if (this.state.selected.length > 0) {
       this.state.selected.forEach((selection, i) => {
+        const name = divRefs[selection].name + '-child' + (divRefs[selection].childDivs.length + 1);
         const divInfo = {
           id: id[i],
+          name: name,
           style: style,
           selected: false,
           childDivs: [],
@@ -105,8 +107,10 @@ class App extends Component {
         id.push(uuid());
       });
     } else {
+      const name = 'div' + (divDisplay.length + 1);
       const divInfo = {
         id: id[0],
+        name: name,
         style: style,
         selected: false,
         childDivs: [],
@@ -214,8 +218,24 @@ class App extends Component {
         }
       });
 
+      const clipboard = [...this.state.clipboard];
+      clipboard.sort((a, b) => {
+        if (a.parent === 0) {
+          return -1;
+        } else {
+          if (b.childDivs.includes(a.id)) {
+            return 1;
+          } else if (a.childDivs.includes(b.id)) {
+            return -1;
+          } else {
+            return 0;
+          }
+        }
+      });
+      // console.log(clipboard);
+
       if (this.state.selected.length === 0) {
-        this.state.clipboard.forEach((div, index) => {
+        clipboard.forEach((div, index) => {
           const family = families[div.id];
           const newId = family.newId;
           const divInfo = {
@@ -232,9 +252,13 @@ class App extends Component {
           divRefs[newId] = divInfo;
           if (divInfo.parent === 0) {
             divDisplay.push(newId);
+            divRefs[newId].name = 'div' + (divDisplay.length);
+          } else {
+            divRefs[newId].name = divRefs[divInfo.parent].name + '-child' + (divRefs[divInfo.parent].childDivs.length);
           }
         });
-      } else { // something(s) are selected
+      } else { 
+        const newlyCreated = [];
 
         this.state.selected.forEach((selection, i) => {
             const newFamilies = _.cloneDeep(families);
@@ -245,10 +269,14 @@ class App extends Component {
                 return i + kid;
               });
               newFamilies[id].kids = newKids;
-              newFamilies[id].newParent = i + newFamilies[id].newParent;
+              if (newFamilies[id].newParent !== 0) {
+                newFamilies[id].newParent = i + newFamilies[id].newParent;
+              }
             });
 
-            this.state.clipboard.forEach((div, index) => {
+            console.log(newFamilies);
+
+            clipboard.forEach((div, index) => {
               const family = newFamilies[div.id];
               const newId = family.newId;
               let newParent;
@@ -270,20 +298,21 @@ class App extends Component {
               };
 
               divRefs[newId] = divInfo;
+              newlyCreated.push(divInfo.id);
 
             });
+        });
 
-            this.state.clipboard.forEach((div, index) => {
-              const family = newFamilies[div.id];
-              const newId = family.newId;
-              const newDiv = divRefs[newId];
-              if (divRefs[newDiv.parent] !== undefined) {
-                const childDivs = divRefs[newDiv.parent].childDivs;
-                if (!childDivs.includes(newId)) {
-                  divRefs[newDiv.parent].childDivs.push(newId);
-                }
-              }
-            });
+        newlyCreated.forEach((id) => {
+          const newDiv = divRefs[id];
+          if (divRefs[newDiv.parent] !== undefined) {
+            const childDivs = divRefs[newDiv.parent].childDivs;
+            if (!childDivs.includes(id)) {
+              divRefs[newDiv.parent].childDivs.push(id);
+            }
+            const name = divRefs[newDiv.parent].name + '-child' + (divRefs[newDiv.parent].childDivs.length);
+            newDiv.name = name;
+          }
         });
       }
   
@@ -421,7 +450,7 @@ class App extends Component {
     return (
       <div className="app">
 
-        <Toolbar cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected} unselectAll={this.unselectAll} />
+        <Toolbar divRefs={this.state.divRefs} cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected} unselectAll={this.unselectAll} />
 
         <div ref={this.boardRef} className="mainContainer" onMouseMove={ (e) => {
             if (this.state.moving) {
