@@ -180,6 +180,7 @@ class App extends Component {
       this.state.selected.forEach((id, index) => {
         this.copyChildren(clipboard, divRefs, id);
       });
+      clipboard.reverse();
       this.setState({
         clipboard
       });
@@ -219,20 +220,6 @@ class App extends Component {
       });
 
       const clipboard = [...this.state.clipboard];
-      clipboard.sort((a, b) => {
-        if (a.parent === 0) {
-          return -1;
-        } else {
-          if (b.childDivs.includes(a.id)) {
-            return 1;
-          } else if (a.childDivs.includes(b.id)) {
-            return -1;
-          } else {
-            return 0;
-          }
-        }
-      });
-      // console.log(clipboard);
 
       if (this.state.selected.length === 0) {
         clipboard.forEach((div, index) => {
@@ -274,7 +261,7 @@ class App extends Component {
               }
             });
 
-            console.log(newFamilies);
+            // console.log(newFamilies);
 
             clipboard.forEach((div, index) => {
               const family = newFamilies[div.id];
