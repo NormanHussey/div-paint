@@ -219,7 +219,7 @@ class App extends Component {
         }
       });
 
-      const clipboard = [...this.state.clipboard];
+      const clipboard = this.state.clipboard;
 
       if (this.state.selected.length === 0) {
         clipboard.forEach((div, index) => {
@@ -455,7 +455,7 @@ class App extends Component {
           }
         </div>
 
-        <Details />
+        <Details selected={this.state.selected} divRefs={this.state.divRefs} />
       </div>
     );
   }
