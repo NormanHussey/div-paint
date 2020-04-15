@@ -4,7 +4,13 @@ class DetailPanel extends Component {
   constructor() {
       super();
       this.state = {
-          style: {},
+          style: {
+            top: "0%",
+            left: "0%",
+            width: "0%",
+            height: "0%",
+            backgroundColor: 'black'
+          },
           units: {}
       };
   }
@@ -42,6 +48,14 @@ class DetailPanel extends Component {
   //     style: props.style
   //   });
   // }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.style !== this.props.style) {
+      this.setState({
+        style: this.props.style
+      });
+    }
+  }
 
   handleSubmit = (e, id) => {
     e.preventDefault();
@@ -126,10 +140,10 @@ class DetailPanel extends Component {
     const div = this.props.div;
     const id = div.id;
     const regex = /([a-z%].*)/;
-    const top = this.props.style.top.split(regex);
-    const left = this.props.style.left.split(regex);
-    const width = this.props.style.width.split(regex);
-    const height = this.props.style.height.split(regex);
+    const top = this.state.style.top.split(regex);
+    const left = this.state.style.left.split(regex);
+    const width = this.state.style.width.split(regex);
+    const height = this.state.style.height.split(regex);
     const style = {
       top,
       left,
@@ -157,7 +171,7 @@ class DetailPanel extends Component {
         <div className="sizeInput">
           <label htmlFor={"left" + id}>Left:</label>
           <input className="leftInput" onChange={this.handleInput} type="number" id={"left" + id} name={"left" + id} value={style.left[0]} step="0.001"/>
-          <select className="leftUnit" onChange={this.handleUnits} defaultValue={style.left[1]}>
+          <select className="leftUnit" onChange={this.handleUnits} value={style.left[1]}>
             <option value="%">%</option>
             <option value="px">px</option>
             <option value="rem">rem</option>
@@ -169,8 +183,8 @@ class DetailPanel extends Component {
         </div>
         <div className="sizeInput">
           <label htmlFor={"width" + id}>Width:</label>
-          <input className="widthInput" onChange={this.handleInput} type="number" id={"width" + id} name={"width" + id} defaultValue={style.width[0]} step="0.001"/>
-          <select className="widthUnit" onChange={this.handleUnits} defaultValue={style.width[1]}>
+          <input className="widthInput" onChange={this.handleInput} type="number" id={"width" + id} name={"width" + id} value={style.width[0]} step="0.001"/>
+          <select className="widthUnit" onChange={this.handleUnits} value={style.width[1]}>
             <option value="%">%</option>
             <option value="px">px</option>
             <option value="rem">rem</option>
@@ -182,8 +196,8 @@ class DetailPanel extends Component {
         </div>
         <div className="sizeInput">
           <label htmlFor={"height" + id}>Height:</label>
-          <input className="heightInput" onChange={this.handleInput} type="number" id={"height" + id} name={"height" + id} defaultValue={style.height[0]} step="0.001"/>
-          <select className="heightUnit" onChange={this.handleUnits} defaultValue={style.height[1]}>
+          <input className="heightInput" onChange={this.handleInput} type="number" id={"height" + id} name={"height" + id} value={style.height[0]} step="0.001"/>
+          <select className="heightUnit" onChange={this.handleUnits} value={style.height[1]}>
             <option value="%">%</option>
             <option value="px">px</option>
             <option value="rem">rem</option>
@@ -195,7 +209,7 @@ class DetailPanel extends Component {
         </div>
         <div>
           <label htmlFor="bgColour">Background:</label>
-          <input onChange={this.handleBgColour} type="color" id="bgColour" defaultValue={div.style.backgroundColor}/>
+          <input onChange={this.handleBgColour} type="color" id="bgColour" value={this.state.style.backgroundColor}/>
         </div>
         <button type="submit">Apply Changes</button>
       </form>
