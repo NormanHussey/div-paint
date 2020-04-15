@@ -111,4 +111,16 @@ input[type=color] {
   flex-basis: 10%;
   height: 100%;
   background-color: slategrey;
+  padding: 1%;
+  position: relative;
+}
+
+.details .panel {
+  position: absolute;
+  top: 1%;
+  left: 2.5%;
+  height: 98%;
+  width: 95%;
+  background-color: white;
+  padding: 2.5%;
 }

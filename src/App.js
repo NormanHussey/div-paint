@@ -421,8 +421,8 @@ class App extends Component {
           width = divRefs[selection.parent].width;
           height = divRefs[selection.parent].height;
         }
-        style.top = ((mouseCoords.y - selection.moveCoords.y) / height) * 100 + '%';
-        style.left = ((mouseCoords.x - selection.moveCoords.x) / width) * 100 + '%';
+        style.top = +(((mouseCoords.y - selection.moveCoords.y) / height) * 100).toFixed(3) + '%';
+        style.left = +(((mouseCoords.x - selection.moveCoords.x) / width) * 100).toFixed(3) + '%';
         selection.style = style;
         divRefs[id] = selection;
       
