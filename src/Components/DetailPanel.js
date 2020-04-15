@@ -4,14 +4,15 @@ class DetailPanel extends Component {
   constructor() {
       super();
       this.state = {
-          style: {
-            top: "0%",
-            left: "0%",
-            width: "0%",
-            height: "0%",
-            backgroundColor: 'black'
-          },
-          units: {}
+        name: '',
+        style: {
+          top: "0%",
+          left: "0%",
+          width: "0%",
+          height: "0%",
+          backgroundColor: 'black'
+        },
+        units: {}
       };
   }
 
@@ -38,16 +39,11 @@ class DetailPanel extends Component {
     };
 
     this.setState({
+      name: this.props.div.name,
       style: this.props.style,
       units
     });
   }
-
-  // componentWillReceiveProps(props) {
-  //   this.setState({
-  //     style: props.style
-  //   });
-  // }
 
   componentDidUpdate(prevProps) {
     if (prevProps.style !== this.props.style) {
@@ -59,7 +55,7 @@ class DetailPanel extends Component {
 
   handleSubmit = (e, id) => {
     e.preventDefault();
-    this.props.updateDiv(id, this.state.style);
+    this.props.updateDiv(id, this.state.style, this.state.name);
   }
 
   handleInput = (e) => {
@@ -133,6 +129,12 @@ class DetailPanel extends Component {
     });
   }
 
+  handleNameInput = (e) => {
+    this.setState({
+      name: e.target.value
+    });
+  }
+
   render() {
     const panelStyle = {
       zIndex: this.props.index + 1
@@ -154,7 +156,7 @@ class DetailPanel extends Component {
       <div className="panel" style={panelStyle}>
       <form onSubmit={(e) => this.handleSubmit(e, id) }>
         <label htmlFor={"name" + id}>Name:</label>
-        <input type="text" id={"name" + id} name={"name" + id} defaultValue={div.name}/>
+        <input type="text" id={"name" + id} name={"name" + id} value={this.state.name} onChange={this.handleNameInput} />
         <div className="sizeInput">
           <label htmlFor={"top" + id}>Top:</label>
           <input className="topInput" onChange={this.handleInput} type="number" id={"top" + id} name={"top" + id} value={style.top[0]} step="0.001"/>

@@ -311,9 +311,10 @@ class App extends Component {
     }
   }
 
-  updateDiv = (id, style) => {
+  updateDiv = (id, style, name) => {
     const divRefs = {...this.state.divRefs};
     divRefs[id].style = style;
+    divRefs[id].name = name;
     this.setState({
       divRefs
     });
