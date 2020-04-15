@@ -24,7 +24,8 @@ class App extends Component {
       },
       history: {},
       redoState: {},
-      clipboard: []
+      clipboard: [],
+      mouseDown: false
     };
   }
 
@@ -397,7 +398,7 @@ class App extends Component {
       height: this.boardRef.current.offsetHeight
     };
     const divRefs = {...this.state.divRefs};
-    if (this.state.moving && this.state.selected.length > 0) {
+    if (this.state.moving && this.state.mouseDown && this.state.selected.length > 0) {
         const id = this.state.selected[this.state.selected.length - 1];
         let newSelected = [id];
         if (this.state.selected.length > 1) {
@@ -438,7 +439,7 @@ class App extends Component {
 
         <Toolbar divRefs={this.state.divRefs} cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected} unselectAll={this.unselectAll} />
 
-        <div ref={this.boardRef} className="mainContainer" onMouseMove={ (e) => {
+        <div ref={this.boardRef} className="mainContainer" onMouseDown={()=> this.setState({mouseDown: true})} onMouseUp={()=> this.setState({mouseDown: false})} onMouseMove={ (e) => {
             if (this.state.moving) {
               this.handleMouseMove(e);
             }
