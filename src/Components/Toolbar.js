@@ -141,7 +141,7 @@ class Toolbar extends Component {
           <form onSubmit={this.handleSubmit}>
             <div className="sizeInput">
               <label htmlFor="top">Top:</label>
-              <input className="topInput" onChange={this.handleInputs} type="number" min="0" max="100" id="top" required/>
+              <input className="topInput" onChange={this.handleInputs} type="number" id="top" required/>
               <select className="topUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>
@@ -154,7 +154,7 @@ class Toolbar extends Component {
             </div>
             <div className="sizeInput">
               <label htmlFor="left">Left:</label>
-              <input className="leftInput" onChange={this.handleInputs} type="number" min="0" max="100" id="left" required/>
+              <input className="leftInput" onChange={this.handleInputs} type="number" id="left" required/>
               <select className="leftUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>
@@ -167,7 +167,7 @@ class Toolbar extends Component {
             </div>
             <div className="sizeInput">
               <label htmlFor="width">Width:</label>
-              <input className="widthInput" onChange={this.handleInputs} type="number" min="0" max="100" id="width" required/>
+              <input className="widthInput" onChange={this.handleInputs} type="number" id="width" required/>
               <select className="widthUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>
@@ -180,7 +180,7 @@ class Toolbar extends Component {
             </div>
             <div className="sizeInput">
               <label htmlFor="height">Height:</label>
-              <input className="heightInput" onChange={this.handleInputs} type="number" min="0" max="100" id="height" required/>
+              <input className="heightInput" onChange={this.handleInputs} type="number" id="height" required/>
               <select className="heightUnit" onChange={this.handleUnits}>
                 <option value="%">%</option>
                 <option value="px">px</option>

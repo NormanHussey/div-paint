@@ -311,13 +311,11 @@ class App extends Component {
     }
   }
 
-  changeDivs = (style) => {
-    const divDisplay = [...this.state.divDisplay];
-    this.state.selected.forEach((selection) => {
-      divDisplay[selection.index].style = style;
-    });
+  updateDiv = (id, style) => {
+    const divRefs = {...this.state.divRefs};
+    divRefs[id].style = style;
     this.setState({
-      divDisplay
+      divRefs
     });
   }
 
@@ -455,7 +453,7 @@ class App extends Component {
           }
         </div>
 
-        <Details selected={this.state.selected} divRefs={this.state.divRefs} />
+        <Details updateDiv={this.updateDiv} selected={this.state.selected} divRefs={this.state.divRefs} />
       </div>
     );
   }
