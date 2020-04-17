@@ -398,7 +398,7 @@ class App extends Component {
       height: this.boardRef.current.offsetHeight
     };
     const divRefs = {...this.state.divRefs};
-    if (this.state.moving && this.state.mouseDown && this.state.selected.length > 0) {
+    if (this.state.moving && this.state.selected.length > 0) {
         const id = this.state.selected[this.state.selected.length - 1];
         let newSelected = [id];
         if (this.state.selected.length > 1) {
