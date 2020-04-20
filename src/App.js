@@ -321,13 +321,17 @@ class App extends Component {
     });
   }
 
-  select = (id, moveCoords, dims) => {
+  select = (id, moveCoords = {}, dims = {}) => {
     const selected = [...this.state.selected];
     const divRefs = {...this.state.divRefs};
     divRefs[id].selected = true;
-    divRefs[id].moveCoords = moveCoords;
-    divRefs[id].width = dims.width;
-    divRefs[id].height = dims.height;
+    if (moveCoords !== {}) {
+      divRefs[id].moveCoords = moveCoords;
+    }
+    if (dims !== {}) {
+      divRefs[id].width = dims.width;
+      divRefs[id].height = dims.height;
+    }
     selected.push(id);
 
     this.setState({
@@ -455,7 +459,7 @@ class App extends Component {
           }
         </div>
 
-        <Details updateDiv={this.updateDiv} selected={this.state.selected} divRefs={this.state.divRefs} />
+        <Details updateDiv={this.updateDiv} selected={this.state.selected} divRefs={this.state.divRefs} select={this.select} />
       </div>
     );
   }

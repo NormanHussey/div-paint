@@ -116,20 +116,20 @@ input[type=color] {
 }
 
 .details .panel {
-  position: absolute;
+  /* position: absolute;
   top: 1%;
-  left: 2.5%;
+  left: 2.5%; */
   height: 98%;
-  width: 95%;
+  width: 98%;
   background-color: white;
   padding: 2.5%;
 }
 
 .panel form {
-  top: 0;
-  left: 0;
+  position: static;
+  border: none;
   width: 100%;
-  height: 100%;
+  padding: 0;
   background-color: transparent;
 }
 

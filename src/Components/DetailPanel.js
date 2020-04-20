@@ -215,6 +215,18 @@ class DetailPanel extends Component {
         </div>
         <button type="submit">Apply Changes</button>
       </form>
+      <div className="familyTree">
+        <p>Children:</p>
+        {
+          div.childDivs.map((child) => {
+            return (
+              <p onClick={ () => this.props.select(child) }>
+                { this.props.divRefs[child].name }
+              </p>
+            )
+          })
+        }
+      </div>
     </div>
     );
   }

@@ -11,7 +11,7 @@ class Details extends Component {
         this.props.selected.map((id, index) => {
             const div = this.props.divRefs[id];
             return (
-              <DetailPanel key={'details' + id} index={index} style={this.props.divRefs[id].style} div={div} updateDiv={this.props.updateDiv} />
+              <DetailPanel key={'details' + id} index={index} style={this.props.divRefs[id].style} div={div} updateDiv={this.props.updateDiv} divRefs={this.props.divRefs} select={this.props.select}/>
             );
           })
         }
