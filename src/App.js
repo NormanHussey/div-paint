@@ -364,17 +364,6 @@ class App extends Component {
     }
   }
 
-  unselectAll = () => {
-    // const divRefs = {...this.state.divRefs};
-    // this.state.selected.forEach((id) => {
-    //   divRefs[id].selected = false;
-    // });
-
-    this.setState({
-      selected: ''
-    });
-  }
-
   toggleMove = () => {
     this.setState({
       moving: !this.state.moving
@@ -439,7 +428,7 @@ class App extends Component {
 
         <Toolbar divRefs={this.state.divRefs} cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected} unselect={this.unselect} />
 
-        <div ref={this.boardRef} className="mainContainer" onMouseDown={()=> this.setState({mouseDown: true})} onMouseUp={()=> this.setState({mouseDown: false})} onMouseMove={ (e) => {
+        <div ref={this.boardRef} className="mainContainer" onClick={this.unselect} onMouseDown={()=> this.setState({mouseDown: true})} onMouseUp={()=> this.setState({mouseDown: false})} onMouseMove={ (e) => {
             if (this.state.moving) {
               this.handleMouseMove(e);
             }
