@@ -197,7 +197,7 @@ class Toolbar extends Component {
             </div>
             <button type="submit">
                 {
-                  this.props.selected.length > 0 ? 'Add Child' : 'Add'
+                  this.props.selected ? 'Add Child' : 'Add'
                 }
             </button>
           </form>
@@ -205,7 +205,7 @@ class Toolbar extends Component {
         }
         <button onClick={this.toggleNew}>{ this.state.openNew ? "Cancel" : "New" }</button>
         <button className={moveClass} onClick={this.toggleMove}>Move</button>
-        <button onClick={this.props.unselectAll}>Unselect All</button>
+        <button onClick={this.props.unselect}>Unselect</button>
         <button onClick={this.props.deleteDiv}>Delete</button>
         <button onClick={this.props.undo}>Undo</button>
         <button onClick={this.props.redo}>Redo</button>

@@ -16,7 +16,7 @@ class App extends Component {
     this.state = {
       divRefs: {},
       divDisplay: [],
-      selected: [],
+      selected: '',
       moving: false,
       mouseCoords: {
         x: 0,
@@ -35,7 +35,7 @@ class App extends Component {
    const history = {
      divRefs: divRefsClone,
      divDisplay: [...this.state.divDisplay],
-     selected: [...this.state.selected]
+     selected: this.state.selected
    };
    return history;
   }
@@ -86,31 +86,29 @@ class App extends Component {
     const history = this.cloneState();
     const divDisplay = [...this.state.divDisplay];
     const divRefs = {...this.state.divRefs};
-    const id = [uuid()];
+    const id = uuid();
 
-    if (this.state.selected.length > 0) {
-      this.state.selected.forEach((selection, i) => {
-        const name = divRefs[selection].name + '-child' + (divRefs[selection].childDivs.length + 1);
-        const divInfo = {
-          id: id[i],
-          name: name,
-          style: style,
-          selected: false,
-          childDivs: [],
-          parent: selection,
-          moveCoords: {
-            X: 0,
-            y: 0
-          }
-        };
-        divRefs[id[i]] = divInfo;
-        divRefs[selection].childDivs.push(id[i]);
-        id.push(uuid());
-      });
+    if (this.state.selected) {
+      const selection = this.state.selected;
+      const name = divRefs[selection].name + '-child' + (divRefs[selection].childDivs.length + 1);
+      const divInfo = {
+        id: id,
+        name: name,
+        style: style,
+        selected: false,
+        childDivs: [],
+        parent: selection,
+        moveCoords: {
+          X: 0,
+          y: 0
+        }
+      };
+      divRefs[id] = divInfo;
+      divRefs[selection].childDivs.push(id);
     } else {
       const name = 'div' + (divDisplay.length + 1);
       const divInfo = {
-        id: id[0],
+        id: id,
         name: name,
         style: style,
         selected: false,
@@ -121,8 +119,8 @@ class App extends Component {
           y: 0
         }
       };
-      divRefs[id[0]] = divInfo;
-      divDisplay.push(id[0]);
+      divRefs[id] = divInfo;
+      divDisplay.push(id);
     }
     this.setState({
       history,
@@ -146,18 +144,18 @@ class App extends Component {
     const history = this.cloneState();
     const divRefs = {...this.state.divRefs};
     const divDisplay = [...this.state.divDisplay];
-    this.state.selected.forEach((id) => {
-      if (divRefs[id].parent === 0) {
-        removeFromArray(id, divDisplay);
-      } else if (divRefs[divRefs[id].parent] !== undefined) {
-        removeFromArray(id, divRefs[divRefs[id].parent].childDivs);
-      }
-      this.deleteChildren(divRefs, id);
-    });
+    const id = this.state.selected;
+
+    if (divRefs[id].parent === 0) {
+      removeFromArray(id, divDisplay);
+    } else if (divRefs[divRefs[id].parent] !== undefined) {
+      removeFromArray(id, divRefs[divRefs[id].parent].childDivs);
+    }
+    this.deleteChildren(divRefs, id);
 
     this.setState({
       history,
-      selected: [],
+      selected: '',
       divDisplay,
       divRefs
     });
@@ -175,12 +173,10 @@ class App extends Component {
   }
 
   copyDiv = () => {
-    if (this.state.selected.length > 0) {
+    if (this.state.selected) {
       const clipboard = [];
       const divRefs = _.cloneDeep(this.state.divRefs);
-      this.state.selected.forEach((id, index) => {
-        this.copyChildren(clipboard, divRefs, id);
-      });
+      this.copyChildren(clipboard, divRefs, this.state.selected);
       clipboard.reverse();
       this.setState({
         clipboard
@@ -215,14 +211,17 @@ class App extends Component {
       const familyIds = Object.keys(families);
       familyIds.forEach((id) => {
         if (families[id].oldParent !== 0 && families[families[id].oldParent] !== undefined) {
+          console.log(id);
           families[families[id].oldParent].kids.push(families[id].newId);
           families[id].newParent = families[families[id].oldParent].newId;
+        } else if (families[families[id].oldParent] === undefined) {
+          families[id].newParent = 0;
         }
       });
 
       const clipboard = this.state.clipboard;
 
-      if (this.state.selected.length === 0) {
+      if (!this.state.selected) {
         clipboard.forEach((div, index) => {
           const family = families[div.id];
           const newId = family.newId;
@@ -248,48 +247,50 @@ class App extends Component {
       } else { 
         const newlyCreated = [];
 
-        this.state.selected.forEach((selection, i) => {
-            const newFamilies = _.cloneDeep(families);
-            const newFamilyIds = Object.keys(newFamilies);
-            newFamilyIds.forEach((id) => {
-              newFamilies[id].newId = i + newFamilies[id].newId;
-              const newKids = newFamilies[id].kids.map((kid) => {
-                return i + kid;
-              });
-              newFamilies[id].kids = newKids;
-              if (newFamilies[id].newParent !== 0) {
-                newFamilies[id].newParent = i + newFamilies[id].newParent;
-              }
-            });
-
-            // console.log(newFamilies);
-
-            clipboard.forEach((div, index) => {
-              const family = newFamilies[div.id];
-              const newId = family.newId;
-              let newParent;
-              if (family.newParent === 0) {
-                newParent = selection;
-              } else {
-                newParent = family.newParent;
-              }
-              const divInfo = {
-                id: newId,
-                style: div.style,
-                selected: false,
-                childDivs: family.kids,
-                parent: newParent,
-                moveCoords: {
-                  X: 0,
-                  y: 0
-                }
-              };
-
-              divRefs[newId] = divInfo;
-              newlyCreated.push(divInfo.id);
-
-            });
+        const selection = this.state.selected;
+        const i = 0;
+ 
+        const newFamilies = _.cloneDeep(families);
+        const newFamilyIds = Object.keys(newFamilies);
+        newFamilyIds.forEach((id) => {
+          newFamilies[id].newId = i + newFamilies[id].newId;
+          const newKids = newFamilies[id].kids.map((kid) => {
+            return i + kid;
+          });
+          newFamilies[id].kids = newKids;
+          if (newFamilies[id].newParent !== 0) {
+            newFamilies[id].newParent = i + newFamilies[id].newParent;
+          }
         });
+
+        // console.log(newFamilies);
+
+        clipboard.forEach((div, index) => {
+          const family = newFamilies[div.id];
+          const newId = family.newId;
+          let newParent;
+          if (family.newParent === 0) {
+            newParent = selection;
+          } else {
+            newParent = family.newParent;
+          }
+          const divInfo = {
+            id: newId,
+            style: div.style,
+            selected: false,
+            childDivs: family.kids,
+            parent: newParent,
+            moveCoords: {
+              X: 0,
+              y: 0
+            }
+          };
+
+          divRefs[newId] = divInfo;
+          newlyCreated.push(divInfo.id);
+
+        });
+
 
         newlyCreated.forEach((id) => {
           const newDiv = divRefs[id];
@@ -322,8 +323,11 @@ class App extends Component {
   }
 
   select = (id, moveCoords = {}, dims = {}) => {
-    const selected = [...this.state.selected];
+    // const selected = this.state.selected;
     const divRefs = {...this.state.divRefs};
+    if (this.state.selected) {
+      divRefs[this.state.selected].selected = false;
+    }
     divRefs[id].selected = true;
     if (moveCoords !== {}) {
       divRefs[id].moveCoords = moveCoords;
@@ -332,10 +336,10 @@ class App extends Component {
       divRefs[id].width = dims.width;
       divRefs[id].height = dims.height;
     }
-    selected.push(id);
+    // selected.push(id);
 
     this.setState({
-      selected,
+      selected: id,
       divRefs
     },
       () => {
@@ -348,33 +352,26 @@ class App extends Component {
     );
   }
 
-  unselect = (id) => {
-    const selected = [...this.state.selected];
-    const divRefs = {...this.state.divRefs};
-    divRefs[id].selected = false;
-    const newSelected = selected.filter((selection) => {
-      if (selection === id) {
-        return false;
-      } else {
-        return true;
-      }
-    });
-
-    this.setState({
-      selected: newSelected,
-      divRefs
-    });
+  unselect = () => {
+    if (this.state.selected) {
+      const divRefs = {...this.state.divRefs};
+      divRefs[this.state.selected].selected = false;
+  
+      this.setState({
+        selected: '',
+        divRefs
+      });
+    }
   }
 
   unselectAll = () => {
-    const divRefs = {...this.state.divRefs};
-    this.state.selected.forEach((id) => {
-      divRefs[id].selected = false;
-    });
+    // const divRefs = {...this.state.divRefs};
+    // this.state.selected.forEach((id) => {
+    //   divRefs[id].selected = false;
+    // });
 
     this.setState({
-      divRefs,
-      selected: []
+      selected: ''
     });
   }
 
@@ -383,7 +380,7 @@ class App extends Component {
       moving: !this.state.moving
     },
       () => {
-        if (this.state.moving && this.state.selected.length > 0) {
+        if (this.state.moving && this.state.selected) {
           this.setState({
             history: this.cloneState()
           });
@@ -402,19 +399,19 @@ class App extends Component {
       height: this.boardRef.current.offsetHeight
     };
     const divRefs = {...this.state.divRefs};
-    if (this.state.moving && this.state.selected.length > 0) {
-        const id = this.state.selected[this.state.selected.length - 1];
-        let newSelected = [id];
-        if (this.state.selected.length > 1) {
-          newSelected = this.state.selected.filter((selectionId) => {
-            if (selectionId === id) {
-              return true;
-            } else {
-              divRefs[selectionId].selected = false;
-              return false;
-            }
-          });
-        }
+    if (this.state.moving && this.state.selected) {
+        const id = this.state.selected;
+        // let newSelected = [id];
+        // if (this.state.selected.length > 1) {
+        //   newSelected = this.state.selected.filter((selectionId) => {
+        //     if (selectionId === id) {
+        //       return true;
+        //     } else {
+        //       divRefs[selectionId].selected = false;
+        //       return false;
+        //     }
+        //   });
+        // }
         const selection = divRefs[id];
         const style = {...selection.style};
         let width, height;
@@ -431,8 +428,7 @@ class App extends Component {
         divRefs[id] = selection;
       
       this.setState({
-        divRefs,
-        selected: newSelected
+        divRefs
       });
     }
   }
@@ -441,7 +437,7 @@ class App extends Component {
     return (
       <div className="app">
 
-        <Toolbar divRefs={this.state.divRefs} cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected} unselectAll={this.unselectAll} />
+        <Toolbar divRefs={this.state.divRefs} cutDiv={this.cutDiv} copyDiv={this.copyDiv} pasteDiv={this.pasteDiv} moving={this.state.moving} redo={this.redo} undo={this.undo} deleteDiv={this.deleteDiv} toggleMove={this.toggleMove} addDiv={this.addDiv} changeDivs={this.changeDivs} selected={this.state.selected} unselect={this.unselect} />
 
         <div ref={this.boardRef} className="mainContainer" onMouseDown={()=> this.setState({mouseDown: true})} onMouseUp={()=> this.setState({mouseDown: false})} onMouseMove={ (e) => {
             if (this.state.moving) {

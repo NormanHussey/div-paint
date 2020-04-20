@@ -37,7 +37,7 @@ class Div extends Component {
     if (!this.props.selected) {
         this.props.select(this.props.id, relativeCoords, position);
     } else {
-        this.props.unselect(this.props.id);
+        this.props.unselect();
     }
   }
 

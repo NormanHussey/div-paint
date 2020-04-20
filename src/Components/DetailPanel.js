@@ -136,9 +136,6 @@ class DetailPanel extends Component {
   }
 
   render() {
-    const panelStyle = {
-      zIndex: this.props.index + 1
-    };
     const div = this.props.div;
     const id = div.id;
     const regex = /([a-z%].*)/;
@@ -153,7 +150,7 @@ class DetailPanel extends Component {
       height
     }
     return (
-      <div className="panel" style={panelStyle}>
+      <div className="panel">
       <form onSubmit={(e) => this.handleSubmit(e, id) }>
         <label htmlFor={"name" + id}>Name:</label>
         <input type="text" id={"name" + id} name={"name" + id} value={this.state.name} onChange={this.handleNameInput} />
@@ -220,7 +217,7 @@ class DetailPanel extends Component {
         {
           div.childDivs.map((child) => {
             return (
-              <p onClick={ () => this.props.select(child) }>
+              <p key={'details-child-' + child} onClick={ () => this.props.select(child) }>
                 { this.props.divRefs[child].name }
               </p>
             )
